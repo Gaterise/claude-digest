@@ -6,22 +6,24 @@
 
 ---
 
-## 1. Claude 公式変更ログの取得元
+## 1. Claude Code 変更ログの取得元
 
 ### Decision
-Anthropic の公式ドキュメントサイト `https://docs.anthropic.com/en/release-notes/overview` をスクレイピングおよびポーリングで取得する。
+`https://github.com/anthropics/claude-code` リポジトリの **GitHub Releases API**（`https://api.github.com/repos/anthropics/claude-code/releases`）を使用して定期ポーリングで変更ログを取得する。
 
 ### Rationale
-- 公式 RSS/Atom フィードは2026年4月時点で提供されていない
-- HTML ページを定期取得（Cloud Scheduler + Cloud Run Functions または Firebase Scheduled Extensions）し、前回取得分との差分を検出して新しいエントリを識別する
-- スクレイピング対象の HTML 構造は比較的安定しており、変更検知が容易
-- Anthropic が将来的に公式 API や RSS を提供した場合は切り替え可能な設計とする
+- Claude Code の変更ログは `anthropics/claude-code` リポジトリの GitHub Releases として公式に公開されている
+- GitHub Releases API は構造化 JSON データを返すため、HTMLスクレイピングより信頼性が高く、パーサの脆弱性がない
+- バージョンタグ（`tag_name`）・公開日時（`published_at`）・Markdown形式の本文（`body`）が機械的に取得可能
+- GitHub API のポーリング間隔は30分。認証なしで60 req/h、`GITHUB_TOKEN`（Personal Access Token）使用時は5,000 req/h のレート制限内で十分対応可能
+- `ETag` / `Last-Modified` ヘッダーを活用した条件付きリクエストにより、変更がない場合はレート制限を消費しない（304 Not Modified）
 
 ### Alternatives Considered
 | 案 | 評価 |
 |----|------|
-| RSS フィード | 2026年4月時点では提供なし → 却下 |
-| GitHub Release Notes (anthropic-sdk) | SDK の変更であり Claude Code 変更ログと乖離 → 補助的に使用 |
+| `docs.anthropic.com` HTML スクレイピング | Claude全般のリリースノートであり Claude Code 専用でない。HTML構造変化で壊れやすい → 却下 |
+| RSS フィード | GitHub Releases はRSSフィードも提供するが、JSON APIの方が構造化されている → 補助利用可 |
+| npm パッケージ `@anthropic-ai/claude-code` のバージョン監視 | パッケージリリースと GitHub Release は連動しているが、変更本文が取得できない → 却下 |
 | Twitter/X API モニタリング | 有料 API、信頼性低い → 却下 |
 | 手動入力 | リアルタイム要件を満たさない → 却下 |
 

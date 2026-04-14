@@ -1,14 +1,14 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { logger } from "firebase-functions";
 import { Timestamp } from "firebase-admin/firestore";
-import { scrapeReleaseNotes } from "./anthropicScraper";
+import { fetchGitHubReleases } from "./githubReleaseScraper";
 import { summarizeChangeLog } from "../summarizer/claudeSummarizer";
 import * as changeLogRepo from "../firestore/changeLogRepository";
 import * as digestRepo from "../firestore/digestRepository";
 
 /**
- * 30分ごとに Anthropic リリースノートをスクレイピングし、
- * 新しいエントリがあれば AI 要約を生成してダイジェスト記事を作成する。
+ * 30分ごとに anthropics/claude-code GitHub Releases API をポーリングし、
+ * 新しいリリースがあれば AI 要約を生成してダイジェスト記事を作成する。
  */
 export const scheduledScrape = onSchedule(
   {
@@ -19,12 +19,12 @@ export const scheduledScrape = onSchedule(
     secrets: ["ANTHROPIC_API_KEY"],
   },
   async () => {
-    logger.info("スクレイピング開始");
+    logger.info("GitHub Releases ポーリング開始");
 
     try {
-      // 1. リリースノートを取得
-      const entries = await scrapeReleaseNotes();
-      logger.info(`${entries.length} 件のエントリを取得`);
+      // 1. GitHub Releases を取得（最新30件）
+      const entries = await fetchGitHubReleases(30, 1);
+      logger.info(`${entries.length} 件のリリースを取得`);
 
       let newCount = 0;
 
@@ -33,6 +33,7 @@ export const scheduledScrape = onSchedule(
         const changeLog = await changeLogRepo.create({
           sourceUrl: entry.sourceUrl,
           rawContent: entry.rawContent,
+          tagName: entry.tagName,
           version: entry.version,
           publishedAt: Timestamp.fromDate(entry.publishedAt),
           fetchedAt: Timestamp.now(),
@@ -48,7 +49,7 @@ export const scheduledScrape = onSchedule(
 
         newCount++;
         logger.info(
-          `新規 ChangeLog 保存: ${changeLog.id} (${entry.title})`
+          `新規 ChangeLog 保存: ${changeLog.id} (${entry.tagName})`
         );
 
         // 3. AI 要約生成
@@ -86,10 +87,10 @@ export const scheduledScrape = onSchedule(
       }
 
       logger.info(
-        `スクレイピング完了: 新規 ${newCount} 件 / 全 ${entries.length} 件`
+        `ポーリング完了: 新規 ${newCount} 件 / 全 ${entries.length} 件`
       );
     } catch (error) {
-      logger.error("スクレイピング全体エラー:", error);
+      logger.error("GitHub Releases ポーリングエラー:", error);
       throw error;
     }
   }

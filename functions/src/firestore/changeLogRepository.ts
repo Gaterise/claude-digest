@@ -20,7 +20,20 @@ export async function findByContentHash(
   return { id: doc.id, ...doc.data() } as ChangeLog;
 }
 
-/** ChangeLog を新規作成する。重複の場合は null を返す */
+/** tagName で既存ドキュメントを検索 */
+export async function findByTagName(
+  tagName: string
+): Promise<ChangeLog | null> {
+  const snap = await getCollection()
+    .where("tagName", "==", tagName)
+    .limit(1)
+    .get();
+  if (snap.empty) return null;
+  const doc = snap.docs[0];
+  return { id: doc.id, ...doc.data() } as ChangeLog;
+}
+
+/** ChangeLog を新規作成する。contentHash が重複する場合は null を返す */
 export async function create(
   data: ChangeLogCreate
 ): Promise<ChangeLog | null> {

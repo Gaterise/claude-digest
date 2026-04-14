@@ -9,7 +9,7 @@
 
 ## Summary
 
-Claude の公式変更ログ（`docs.anthropic.com/en/release-notes/overview`）を定期ポーリングで取得し、Anthropic Claude API（claude-3-5-haiku）で日本語要約・カテゴリ分類してダイジェスト記事として公開する Web アプリケーション。  
+Claude の `anthropics/claude-code` GitHub Releases API（`https://api.github.com/repos/anthropics/claude-code/releases`）を定期ポーリングで取得し、Anthropic Claude API（claude-3-5-haiku）で日本語要約・カテゴリ分類してダイジェスト記事として公開する Web アプリケーション。  
 フロントエンドは **Next.js 15.3.9 App Router（SSR）+ Tailwind CSS**、バックエンドは **Firebase Functions 第2世代**、ストレージは **Firestore**、デプロイは **Firebase Hosting**。API クライアントは **OpenAPI spec + orval** で自動生成する。
 
 ---
@@ -105,7 +105,7 @@ claude_digest/
 │   │   │   └── middleware/
 │   │   │       └── errorHandler.ts
 │   │   ├── scraper/
-│   │   │   ├── anthropicScraper.ts   # docs.anthropic.com スクレイピング
+│   │   │   ├── githubReleaseScraper.ts   # GitHub Releases API 取得・パース
 │   │   │   └── scheduler.ts          # Cloud Scheduler トリガー（定期実行）
 │   │   ├── summarizer/
 │   │   │   └── claudeSummarizer.ts   # Anthropic API 呼び出し・要約生成

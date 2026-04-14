@@ -32,6 +32,14 @@
         { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "fetchedAt", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "change_logs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "tagName", "order": "ASCENDING" },
+        { "fieldPath": "fetchedAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

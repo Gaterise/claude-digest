@@ -10,15 +10,16 @@
 
 ### 1. `change_logs` コレクション
 
-公式サイトから取得した生の変更ログエントリ。
+GitHub Releases API から取得した生の変更ログエントリ。
 
 ```typescript
 interface ChangeLog {
   id: string;                   // Firestore doc ID（自動生成）
-  sourceUrl: string;            // 取得元URL（例: https://docs.anthropic.com/en/release-notes/overview）
-  rawContent: string;           // 取得した生HTMLまたはMarkdown
-  version: string | null;       // バージョン番号（例: "1.9.0", null if not versioned）
-  publishedAt: Timestamp;       // 公式サイト上の公開日時
+  sourceUrl: string;            // GitHub Release ページURL（例: https://github.com/anthropics/claude-code/releases/tag/v2.1.107）
+  rawContent: string;           // GitHub Release の body（Markdown形式）
+  tagName: string;              // GitHub リリースタグ（例: "v2.1.107"）
+  version: string | null;       // バージョン番号（tagName から抽出、例: "2.1.107", null if not semver）
+  publishedAt: Timestamp;       // GitHub Release の published_at（公開日時）
   fetchedAt: Timestamp;         // システムが取得した日時
   contentHash: string;          // SHA-256 ハッシュ（重複検知用）
   status: 'pending' | 'processing' | 'processed' | 'error';

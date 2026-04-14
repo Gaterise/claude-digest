@@ -12,6 +12,7 @@ export interface ChangeLog {
   id: string;
   sourceUrl: string;
   rawContent: string;
+  tagName: string;
   version: string | null;
   publishedAt: Timestamp;
   fetchedAt: Timestamp;
