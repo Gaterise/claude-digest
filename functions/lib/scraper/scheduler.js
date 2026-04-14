@@ -42,11 +42,11 @@ const claudeSummarizer_1 = require("../summarizer/claudeSummarizer");
 const changeLogRepo = __importStar(require("../firestore/changeLogRepository"));
 const digestRepo = __importStar(require("../firestore/digestRepository"));
 /**
- * 30分ごとに anthropics/claude-code GitHub Releases API をポーリングし、
+ * 6時間ごとに anthropics/claude-code GitHub Releases API をポーリングし、
  * 新しいリリースがあれば AI 要約を生成してダイジェスト記事を作成する。
  */
 exports.scheduledScrape = (0, scheduler_1.onSchedule)({
-    schedule: "every 30 minutes",
+    schedule: "every 6 hours",
     region: "asia-northeast1",
     timeoutSeconds: 300,
     memory: "512MiB",

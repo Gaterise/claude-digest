@@ -7,9 +7,9 @@ interface DigestCardProps {
 }
 
 export function DigestCard({ article }: DigestCardProps) {
-  const formattedDate = new Date(article.publishedAt).toLocaleDateString(
+  const formattedDate = new Date(article.publishedAt).toLocaleString(
     "ja-JP",
-    { year: "numeric", month: "long", day: "numeric" }
+    { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" }
   );
 
   return (
