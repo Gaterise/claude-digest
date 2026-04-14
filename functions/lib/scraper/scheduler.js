@@ -37,13 +37,13 @@ exports.scheduledScrape = void 0;
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const firebase_functions_1 = require("firebase-functions");
 const firestore_1 = require("firebase-admin/firestore");
-const anthropicScraper_1 = require("./anthropicScraper");
+const githubReleaseScraper_1 = require("./githubReleaseScraper");
 const claudeSummarizer_1 = require("../summarizer/claudeSummarizer");
 const changeLogRepo = __importStar(require("../firestore/changeLogRepository"));
 const digestRepo = __importStar(require("../firestore/digestRepository"));
 /**
- * 30分ごとに Anthropic リリースノートをスクレイピングし、
- * 新しいエントリがあれば AI 要約を生成してダイジェスト記事を作成する。
+ * 30分ごとに anthropics/claude-code GitHub Releases API をポーリングし、
+ * 新しいリリースがあれば AI 要約を生成してダイジェスト記事を作成する。
  */
 exports.scheduledScrape = (0, scheduler_1.onSchedule)({
     schedule: "every 30 minutes",
@@ -52,17 +52,18 @@ exports.scheduledScrape = (0, scheduler_1.onSchedule)({
     memory: "512MiB",
     secrets: ["ANTHROPIC_API_KEY"],
 }, async () => {
-    firebase_functions_1.logger.info("スクレイピング開始");
+    firebase_functions_1.logger.info("GitHub Releases ポーリング開始");
     try {
-        // 1. リリースノートを取得
-        const entries = await (0, anthropicScraper_1.scrapeReleaseNotes)();
-        firebase_functions_1.logger.info(`${entries.length} 件のエントリを取得`);
+        // 1. GitHub Releases を取得（最新30件）
+        const entries = await (0, githubReleaseScraper_1.fetchGitHubReleases)(30, 1);
+        firebase_functions_1.logger.info(`${entries.length} 件のリリースを取得`);
         let newCount = 0;
         for (const entry of entries) {
             // 2. 重複チェック & 保存
             const changeLog = await changeLogRepo.create({
                 sourceUrl: entry.sourceUrl,
                 rawContent: entry.rawContent,
+                tagName: entry.tagName,
                 version: entry.version,
                 publishedAt: firestore_1.Timestamp.fromDate(entry.publishedAt),
                 fetchedAt: firestore_1.Timestamp.now(),
@@ -75,7 +76,7 @@ exports.scheduledScrape = (0, scheduler_1.onSchedule)({
                 continue;
             }
             newCount++;
-            firebase_functions_1.logger.info(`新規 ChangeLog 保存: ${changeLog.id} (${entry.title})`);
+            firebase_functions_1.logger.info(`新規 ChangeLog 保存: ${changeLog.id} (${entry.tagName})`);
             // 3. AI 要約生成
             try {
                 await changeLogRepo.updateStatus(changeLog.id, "processing");
@@ -103,10 +104,10 @@ exports.scheduledScrape = (0, scheduler_1.onSchedule)({
                 firebase_functions_1.logger.error(`要約生成エラー (${changeLog.id}): ${msg}`);
             }
         }
-        firebase_functions_1.logger.info(`スクレイピング完了: 新規 ${newCount} 件 / 全 ${entries.length} 件`);
+        firebase_functions_1.logger.info(`ポーリング完了: 新規 ${newCount} 件 / 全 ${entries.length} 件`);
     }
     catch (error) {
-        firebase_functions_1.logger.error("スクレイピング全体エラー:", error);
+        firebase_functions_1.logger.error("GitHub Releases ポーリングエラー:", error);
         throw error;
     }
 });

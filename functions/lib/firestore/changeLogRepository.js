@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findByContentHash = findByContentHash;
+exports.findByTagName = findByTagName;
 exports.create = create;
 exports.updateStatus = updateStatus;
 exports.findPending = findPending;
@@ -21,7 +22,18 @@ async function findByContentHash(contentHash) {
     const doc = snap.docs[0];
     return { id: doc.id, ...doc.data() };
 }
-/** ChangeLog を新規作成する。重複の場合は null を返す */
+/** tagName で既存ドキュメントを検索 */
+async function findByTagName(tagName) {
+    const snap = await getCollection()
+        .where("tagName", "==", tagName)
+        .limit(1)
+        .get();
+    if (snap.empty)
+        return null;
+    const doc = snap.docs[0];
+    return { id: doc.id, ...doc.data() };
+}
+/** ChangeLog を新規作成する。contentHash が重複する場合は null を返す */
 async function create(data) {
     const existing = await findByContentHash(data.contentHash);
     if (existing)
