@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ダイジェスト記事: 公開済みのみ読み取り可能、書き込みは Admin SDK のみ
+    match /digest_articles/{docId} {
+      allow read: if resource.data.status == 'published';
+      allow write: if false;
+    }
+
+    // 変更ログ: Admin SDK のみアクセス可能
+    match /change_logs/{docId} {
+      allow read: if false;
+      allow write: if false;
+    }
+
+    // デフォルト: 全て拒否
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
