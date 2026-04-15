@@ -13,7 +13,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen">
-      <div className="mx-auto max-w-4xl px-4 py-6">
+      <div className="mx-auto max-w-4xl px-3 sm:px-4 py-4 sm:py-6">
         <div className="mb-4">
           <h2 className="text-lg font-semibold text-gray-800">変更ログ一覧</h2>
           <p className="text-sm text-gray-500">

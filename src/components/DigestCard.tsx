@@ -22,11 +22,11 @@ export function DigestCard({ article }: DigestCardProps) {
     <Link
       href={`/digests/${article.id}`}
       data-testid="digest-card"
-      className="block rounded-lg border border-gray-200 bg-white px-4 py-3 transition-all hover:shadow-sm hover:border-blue-200 hover:bg-blue-50/30"
+      className="block rounded-lg border border-gray-200 bg-white px-3 py-3 sm:px-4 transition-all hover:shadow-sm hover:border-blue-200 hover:bg-blue-50/30"
     >
-      <div className="flex items-start gap-3">
-        {/* 左カラム: バージョン・日時・NEWバッジ */}
-        <div className="flex-shrink-0 w-36 pt-0.5">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
+        {/* 上部(モバイル) / 左カラム(PC): バージョン・日時・NEWバッジ */}
+        <div className="flex sm:flex-col items-center sm:items-start justify-between sm:justify-start sm:flex-shrink-0 sm:w-36 sm:pt-0.5 gap-2 sm:gap-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             {article.originalVersion && (
               <span className="text-sm font-mono font-semibold text-blue-600">
@@ -39,14 +39,14 @@ export function DigestCard({ article }: DigestCardProps) {
               </span>
             )}
           </div>
-          <span className="block text-xs text-gray-400 leading-tight whitespace-nowrap mt-0.5">
+          <span className="text-xs text-gray-400 leading-tight whitespace-nowrap sm:mt-0.5">
             {formattedDate}
           </span>
         </div>
 
-        {/* 右カラム: タイトル・変更件数・カテゴリ */}
+        {/* 右カラム: タイトル・変更件数・ポイント・カテゴリ */}
         <div className="flex-1 min-w-0">
-          <h2 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 leading-snug">
+          <h2 className="text-sm font-semibold text-gray-900 leading-snug">
             {article.title}
           </h2>
 
