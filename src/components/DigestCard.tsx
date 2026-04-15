@@ -53,7 +53,7 @@ export function DigestCard({ article }: DigestCardProps) {
           {article.keyPoints.length > 0 && (
             <div className="mt-1 flex items-center gap-2">
               <span className="text-xs text-gray-400">
-                {article.keyPoints.length} 件の変更
+                {article.keyPoints.length} 件の重要な変更
               </span>
             </div>
           )}

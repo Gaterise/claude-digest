@@ -69,9 +69,6 @@ export function DigestList({ initialArticles }: DigestListProps) {
         </div>
       ) : (
         <div>
-          <p className="mb-2 text-sm text-gray-500">
-            {articles.length} 件の変更ログ
-          </p>
           <div className="space-y-2">
             {articles.map((article) => (
               <DigestCard key={article.id} article={article} />
