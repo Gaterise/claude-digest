@@ -15,31 +15,48 @@ export function DigestCard({ article }: DigestCardProps) {
     minute: "2-digit",
   });
 
+  const isNew =
+    Date.now() - new Date(article.publishedAt).getTime() < 24 * 60 * 60 * 1000;
+
   return (
-    <div
+    <Link
+      href={`/digests/${article.id}`}
       data-testid="digest-card"
-      className="rounded-lg border border-gray-200 bg-white px-4 py-3 transition-shadow hover:shadow-sm hover:border-gray-300"
+      className="block rounded-lg border border-gray-200 bg-white px-4 py-3 transition-all hover:shadow-sm hover:border-blue-200 hover:bg-blue-50/30"
     >
       <div className="flex items-start gap-3">
-        {/* 左カラム: バージョン・日時 */}
-        <div className="flex-shrink-0 w-32 pt-0.5">
-          {article.originalVersion && (
-            <span className="block text-sm font-mono font-semibold text-blue-600">
-              v{article.originalVersion}
-            </span>
-          )}
-          <span className="block text-xs text-gray-400 leading-tight whitespace-nowrap">
+        {/* 左カラム: バージョン・日時・NEWバッジ */}
+        <div className="flex-shrink-0 w-36 pt-0.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {article.originalVersion && (
+              <span className="text-sm font-mono font-semibold text-blue-600">
+                v{article.originalVersion}
+              </span>
+            )}
+            {isNew && (
+              <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white leading-none">
+                NEW
+              </span>
+            )}
+          </div>
+          <span className="block text-xs text-gray-400 leading-tight whitespace-nowrap mt-0.5">
             {formattedDate}
           </span>
         </div>
 
-        {/* 右カラム: タイトル・ポイント・カテゴリ */}
+        {/* 右カラム: タイトル・変更件数・カテゴリ */}
         <div className="flex-1 min-w-0">
-          <Link href={`/digests/${article.id}`} className="block">
-            <h2 className="text-sm font-semibold text-gray-900 hover:text-blue-600 leading-snug">
-              {article.title}
-            </h2>
-          </Link>
+          <h2 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 leading-snug">
+            {article.title}
+          </h2>
+
+          {article.keyPoints.length > 0 && (
+            <div className="mt-1 flex items-center gap-2">
+              <span className="text-xs text-gray-400">
+                {article.keyPoints.length} 件の変更
+              </span>
+            </div>
+          )}
 
           {article.keyPoints.length > 0 && (
             <ul className="mt-1 space-y-0.5">
@@ -59,6 +76,6 @@ export function DigestCard({ article }: DigestCardProps) {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

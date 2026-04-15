@@ -1,18 +1,18 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { logger } from "firebase-functions";
 import { Timestamp } from "firebase-admin/firestore";
-import { fetchGitHubReleases } from "./githubReleaseScraper";
+import { fetchAllGitHubReleases } from "./githubReleaseScraper";
 import { summarizeChangeLog } from "../summarizer/claudeSummarizer";
 import * as changeLogRepo from "../firestore/changeLogRepository";
 import * as digestRepo from "../firestore/digestRepository";
 
 /**
- * 6時間ごとに anthropics/claude-code GitHub Releases API をポーリングし、
+ * 1時間ごとに anthropics/claude-code GitHub Releases API をポーリングし、
  * 新しいリリースがあれば AI 要約を生成してダイジェスト記事を作成する。
  */
 export const scheduledScrape = onSchedule(
   {
-    schedule: "every 6 hours",
+    schedule: "every 1 hours",
     region: "asia-northeast1",
     timeoutSeconds: 300,
     memory: "512MiB",
@@ -22,8 +22,8 @@ export const scheduledScrape = onSchedule(
     logger.info("GitHub Releases ポーリング開始");
 
     try {
-      // 1. GitHub Releases を取得（最新30件）
-      const entries = await fetchGitHubReleases(30, 1);
+      // 1. GitHub Releases を全ページ取得
+      const entries = await fetchAllGitHubReleases();
       logger.info(`${entries.length} 件のリリースを取得`);
 
       let newCount = 0;

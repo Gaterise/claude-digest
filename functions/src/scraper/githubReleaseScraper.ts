@@ -65,6 +65,22 @@ export async function fetchGitHubReleases(
   return parseReleases(releases);
 }
 
+/**
+ * 全ページを取得してすべてのリリースを返す
+ */
+export async function fetchAllGitHubReleases(): Promise<ScrapedEntry[]> {
+  const all: ScrapedEntry[] = [];
+  let page = 1;
+  const perPage = 100;
+  while (true) {
+    const entries = await fetchGitHubReleases(perPage, page);
+    all.push(...entries);
+    if (entries.length < perPage) break;
+    page++;
+  }
+  return all;
+}
+
 /** GitHub Releases レスポンスを ScrapedEntry 配列に変換する */
 export function parseReleases(releases: GitHubRelease[]): ScrapedEntry[] {
   return releases

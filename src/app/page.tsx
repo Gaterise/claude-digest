@@ -12,15 +12,14 @@ export default async function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Claude Digest</h1>
-          <p className="mt-2 text-gray-600">
-            Claude の変更ログを日本語でわかりやすくお届けします
+    <main className="min-h-screen">
+      <div className="mx-auto max-w-4xl px-4 py-6">
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-gray-800">変更ログ一覧</h2>
+          <p className="text-sm text-gray-500">
+            Claude の最新リリース情報を日本語でわかりやすくお届けします
           </p>
-        </header>
-
+        </div>
         <DigestList initialArticles={data?.items ?? []} />
       </div>
     </main>
