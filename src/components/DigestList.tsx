@@ -68,10 +68,15 @@ export function DigestList({ initialArticles }: DigestListProps) {
           )}
         </div>
       ) : (
-        <div className="space-y-4">
-          {articles.map((article) => (
-            <DigestCard key={article.id} article={article} />
-          ))}
+        <div>
+          <p className="mb-2 text-sm text-gray-500">
+            {articles.length} 件の変更ログ
+          </p>
+          <div className="space-y-2">
+            {articles.map((article) => (
+              <DigestCard key={article.id} article={article} />
+            ))}
+          </div>
         </div>
       )}
     </div>

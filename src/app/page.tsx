@@ -6,7 +6,7 @@ export const revalidate = 60; // ISR: 60秒
 export default async function Home() {
   let data;
   try {
-    data = await listDigests({ limit: 20 });
+    data = await listDigests({ limit: 50 });
   } catch {
     data = null;
   }
