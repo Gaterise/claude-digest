@@ -42,11 +42,11 @@ const claudeSummarizer_1 = require("../summarizer/claudeSummarizer");
 const changeLogRepo = __importStar(require("../firestore/changeLogRepository"));
 const digestRepo = __importStar(require("../firestore/digestRepository"));
 /**
- * 6時間ごとに anthropics/claude-code GitHub Releases API をポーリングし、
+ * 1時間ごとに anthropics/claude-code GitHub Releases API をポーリングし、
  * 新しいリリースがあれば AI 要約を生成してダイジェスト記事を作成する。
  */
 exports.scheduledScrape = (0, scheduler_1.onSchedule)({
-    schedule: "every 6 hours",
+    schedule: "every 1 hours",
     region: "asia-northeast1",
     timeoutSeconds: 300,
     memory: "512MiB",
@@ -54,8 +54,8 @@ exports.scheduledScrape = (0, scheduler_1.onSchedule)({
 }, async () => {
     firebase_functions_1.logger.info("GitHub Releases ポーリング開始");
     try {
-        // 1. GitHub Releases を取得（最新30件）
-        const entries = await (0, githubReleaseScraper_1.fetchGitHubReleases)(30, 1);
+        // 1. GitHub Releases を全ページ取得
+        const entries = await (0, githubReleaseScraper_1.fetchAllGitHubReleases)();
         firebase_functions_1.logger.info(`${entries.length} 件のリリースを取得`);
         let newCount = 0;
         for (const entry of entries) {

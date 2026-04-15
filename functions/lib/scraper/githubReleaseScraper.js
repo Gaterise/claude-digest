@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateContentHash = generateContentHash;
 exports.fetchGitHubReleases = fetchGitHubReleases;
+exports.fetchAllGitHubReleases = fetchAllGitHubReleases;
 exports.parseReleases = parseReleases;
 const crypto_1 = require("crypto");
 const GITHUB_API_URL = "https://api.github.com/repos/anthropics/claude-code/releases";
@@ -32,6 +33,22 @@ async function fetchGitHubReleases(perPage = 30, page = 1) {
     }
     const releases = (await response.json());
     return parseReleases(releases);
+}
+/**
+ * 全ページを取得してすべてのリリースを返す
+ */
+async function fetchAllGitHubReleases() {
+    const all = [];
+    let page = 1;
+    const perPage = 100;
+    while (true) {
+        const entries = await fetchGitHubReleases(perPage, page);
+        all.push(...entries);
+        if (entries.length < perPage)
+            break;
+        page++;
+    }
+    return all;
 }
 /** GitHub Releases レスポンスを ScrapedEntry 配列に変換する */
 function parseReleases(releases) {

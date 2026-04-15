@@ -27,6 +27,10 @@ interface GitHubRelease {
  * perPage はデフォルト 30（最大 100）。
  */
 export declare function fetchGitHubReleases(perPage?: number, page?: number): Promise<ScrapedEntry[]>;
+/**
+ * 全ページを取得してすべてのリリースを返す
+ */
+export declare function fetchAllGitHubReleases(): Promise<ScrapedEntry[]>;
 /** GitHub Releases レスポンスを ScrapedEntry 配列に変換する */
 export declare function parseReleases(releases: GitHubRelease[]): ScrapedEntry[];
 export {};
