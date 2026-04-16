@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://claude-digest.web.app/sitemap.xml
+Sitemap: https://claude-digest.com/sitemap.xml

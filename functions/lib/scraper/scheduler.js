@@ -38,28 +38,61 @@ const scheduler_1 = require("firebase-functions/v2/scheduler");
 const firebase_functions_1 = require("firebase-functions");
 const firestore_1 = require("firebase-admin/firestore");
 const githubReleaseScraper_1 = require("./githubReleaseScraper");
-const claudeSummarizer_1 = require("../summarizer/claudeSummarizer");
+const geminiSummarizer_1 = require("../summarizer/geminiSummarizer");
 const changeLogRepo = __importStar(require("../firestore/changeLogRepository"));
 const digestRepo = __importStar(require("../firestore/digestRepository"));
+/** ChangeLog 1件をダイジェスト記事に変換する共通処理 */
+async function processOneChangeLog(changeLog, title) {
+    await changeLogRepo.updateStatus(changeLog.id, "processing");
+    const result = await (0, geminiSummarizer_1.summarizeChangeLog)(changeLog.rawContent, title);
+    const article = await digestRepo.create({
+        changeLogId: changeLog.id,
+        title: result.title,
+        summary: result.summary,
+        keyPoints: result.keyPoints,
+        categories: result.categories,
+        sourceUrl: changeLog.sourceUrl,
+        originalVersion: changeLog.version,
+        publishedAt: changeLog.publishedAt,
+        createdAt: firestore_1.Timestamp.now(),
+        updatedAt: firestore_1.Timestamp.now(),
+        status: "published",
+    });
+    await changeLogRepo.updateStatus(changeLog.id, "processed");
+    firebase_functions_1.logger.info(`ダイジェスト記事作成完了: ${article.id} (${changeLog.id})`);
+}
 /**
  * 1時間ごとに anthropics/claude-code GitHub Releases API をポーリングし、
  * 新しいリリースがあれば AI 要約を生成してダイジェスト記事を作成する。
+ * また、前回エラーになった ChangeLog を再処理する。
  */
 exports.scheduledScrape = (0, scheduler_1.onSchedule)({
     schedule: "every 1 hours",
     region: "asia-northeast1",
     timeoutSeconds: 300,
     memory: "512MiB",
-    secrets: ["ANTHROPIC_API_KEY"],
 }, async () => {
     firebase_functions_1.logger.info("GitHub Releases ポーリング開始");
     try {
-        // 1. GitHub Releases を全ページ取得
+        // === Phase 1: エラー状態の ChangeLog を再処理 ===
+        const errorLogs = await changeLogRepo.findByStatus("error");
+        firebase_functions_1.logger.info(`エラー状態の ChangeLog: ${errorLogs.length} 件`);
+        for (const changeLog of errorLogs) {
+            try {
+                await processOneChangeLog(changeLog, changeLog.tagName);
+            }
+            catch (error) {
+                const msg = error instanceof Error ? error.message : "不明なエラー";
+                await changeLogRepo.updateStatus(changeLog.id, "error", msg);
+                firebase_functions_1.logger.error(`再処理エラー (${changeLog.id}): ${msg}`);
+            }
+        }
+        // === Phase 2: 新規 GitHub Releases を取得して保存・処理 ===
         const entries = await (0, githubReleaseScraper_1.fetchAllGitHubReleases)();
         firebase_functions_1.logger.info(`${entries.length} 件のリリースを取得`);
         let newCount = 0;
         for (const entry of entries) {
-            // 2. 重複チェック & 保存
+            // 重複チェック & 保存（既存なら null が返る）
             const changeLog = await changeLogRepo.create({
                 sourceUrl: entry.sourceUrl,
                 rawContent: entry.rawContent,
@@ -71,32 +104,12 @@ exports.scheduledScrape = (0, scheduler_1.onSchedule)({
                 status: "pending",
                 errorMessage: null,
             });
-            if (!changeLog) {
-                // 重複 → スキップ
-                continue;
-            }
+            if (!changeLog)
+                continue; // 重複 → スキップ
             newCount++;
             firebase_functions_1.logger.info(`新規 ChangeLog 保存: ${changeLog.id} (${entry.tagName})`);
-            // 3. AI 要約生成
             try {
-                await changeLogRepo.updateStatus(changeLog.id, "processing");
-                const result = await (0, claudeSummarizer_1.summarizeChangeLog)(entry.rawContent, entry.title);
-                // 4. ダイジェスト記事作成
-                const article = await digestRepo.create({
-                    changeLogId: changeLog.id,
-                    title: result.title,
-                    summary: result.summary,
-                    keyPoints: result.keyPoints,
-                    categories: result.categories,
-                    sourceUrl: entry.sourceUrl,
-                    originalVersion: entry.version,
-                    publishedAt: firestore_1.Timestamp.fromDate(entry.publishedAt),
-                    createdAt: firestore_1.Timestamp.now(),
-                    updatedAt: firestore_1.Timestamp.now(),
-                    status: "published",
-                });
-                await changeLogRepo.updateStatus(changeLog.id, "processed");
-                firebase_functions_1.logger.info(`ダイジェスト記事作成完了: ${article.id}`);
+                await processOneChangeLog(changeLog, entry.title);
             }
             catch (error) {
                 const msg = error instanceof Error ? error.message : "不明なエラー";
@@ -104,7 +117,7 @@ exports.scheduledScrape = (0, scheduler_1.onSchedule)({
                 firebase_functions_1.logger.error(`要約生成エラー (${changeLog.id}): ${msg}`);
             }
         }
-        firebase_functions_1.logger.info(`ポーリング完了: 新規 ${newCount} 件 / 全 ${entries.length} 件`);
+        firebase_functions_1.logger.info(`ポーリング完了: 再処理 ${errorLogs.length} 件 / 新規 ${newCount} 件 / 全 ${entries.length} 件`);
     }
     catch (error) {
         firebase_functions_1.logger.error("GitHub Releases ポーリングエラー:", error);

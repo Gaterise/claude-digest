@@ -35,16 +35,32 @@ async function fetchGitHubReleases(perPage = 30, page = 1) {
     return parseReleases(releases);
 }
 /**
- * 全ページを取得してすべてのリリースを返す
+ * 全ページを取得してすべてのリリースを返す。
+ * ページネーション終了判定はフィルタ前の生件数で行う（draft除外後に件数が減っても止まらないように）。
  */
 async function fetchAllGitHubReleases() {
     const all = [];
     let page = 1;
     const perPage = 100;
     while (true) {
-        const entries = await fetchGitHubReleases(perPage, page);
-        all.push(...entries);
-        if (entries.length < perPage)
+        const url = `${GITHUB_API_URL}?per_page=${perPage}&page=${page}`;
+        const headers = {
+            Accept: "application/vnd.github+json",
+            "User-Agent": "ClaudeDigest/1.0 (changelog-aggregator)",
+            "X-GitHub-Api-Version": "2022-11-28",
+        };
+        const githubToken = process.env.GITHUB_TOKEN;
+        if (githubToken) {
+            headers["Authorization"] = `Bearer ${githubToken}`;
+        }
+        const response = await fetch(url, { headers });
+        if (!response.ok) {
+            throw new Error(`GitHub Releases API 取得失敗: HTTP ${response.status} ${response.statusText}`);
+        }
+        const releases = (await response.json());
+        all.push(...parseReleases(releases));
+        // フィルタ前の生件数で判定することで draft 除外による誤終了を防ぐ
+        if (releases.length < perPage)
             break;
         page++;
     }

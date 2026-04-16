@@ -11,22 +11,8 @@ function getCollection() {
 /** 公開済みダイジェスト記事を一覧取得する（カーソルページネーション） */
 async function listPublished(options = {}) {
     const { limit = 20, cursor, category, from, to } = options;
-    // 総件数取得（フィルタ適用前）
-    let countQuery = getCollection().where("status", "==", "published");
-    if (category) {
-        countQuery = countQuery.where("categories", "array-contains", category);
-    }
-    if (from) {
-        countQuery = countQuery.where("publishedAt", ">=", firestore_1.Timestamp.fromDate(new Date(from)));
-    }
-    if (to) {
-        countQuery = countQuery.where("publishedAt", "<=", firestore_1.Timestamp.fromDate(new Date(to)));
-    }
-    const countSnap = await countQuery.count().get();
-    const total = countSnap.data().count;
-    // データ取得
-    let query = getCollection()
-        .where("status", "==", "published");
+    // データ取得クエリ（count() は NOT_FOUND エラーになるため使用しない）
+    let query = getCollection().where("status", "==", "published");
     if (category) {
         query = query.where("categories", "array-contains", category);
     }
@@ -48,6 +34,7 @@ async function listPublished(options = {}) {
     const hasMore = docs.length > limit;
     const items = hasMore ? docs.slice(0, limit) : docs;
     const nextCursor = hasMore ? items[items.length - 1].id : null;
+    const total = cursor ? -1 : items.length + (hasMore ? 1 : 0);
     return { items, total, nextCursor };
 }
 /** ID で公開済みダイジェスト記事を取得する */

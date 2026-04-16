@@ -28,7 +28,8 @@ interface GitHubRelease {
  */
 export declare function fetchGitHubReleases(perPage?: number, page?: number): Promise<ScrapedEntry[]>;
 /**
- * 全ページを取得してすべてのリリースを返す
+ * 全ページを取得してすべてのリリースを返す。
+ * ページネーション終了判定はフィルタ前の生件数で行う（draft除外後に件数が減っても止まらないように）。
  */
 export declare function fetchAllGitHubReleases(): Promise<ScrapedEntry[]>;
 /** GitHub Releases レスポンスを ScrapedEntry 配列に変換する */

@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { VertexAI } from "@google-cloud/vertexai";
 import type { DigestCategory } from "../types";
 
 export interface SummarizationResult {
@@ -22,58 +22,69 @@ const SYSTEM_PROMPT = `あなたはClaude（Anthropic）の変更ログを日本
    - breaking_change（破壊的変更）
    - other（その他）
 
-JSON形式で出力してください。`;
+必ず以下のJSON形式のみで出力してください。前置きや説明は不要です。
+{"title":"...","summary":"...","keyPoints":["..."],"categories":["..."]}`;
 
 /** HTMLタグを除去してプレーンテキストに変換する */
 function stripHtml(html: string): string {
   return html
-    .replace(/<[^>]+>/g, " ")   // タグを空白に置換
+    .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
-    .replace(/\s{2,}/g, " ")    // 連続空白を1つに
+    .replace(/\s{2,}/g, " ")
     .trim();
 }
 
-/** 変更ログの生コンテンツを日本語ダイジェストに要約する */
+/**
+ * @google-cloud/vertexai SDK で Gemini を呼び出し、変更ログを日本語ダイジェストに要約する。
+ * Cloud Run / Cloud Functions 上では Application Default Credentials (ADC) が自動適用される。
+ * 事前に Vertex AI API (aiplatform.googleapis.com) の有効化と、実行サービスアカウントへの
+ * roles/aiplatform.user 付与が必要。
+ */
 export async function summarizeChangeLog(
   rawContent: string,
   originalTitle: string
 ): Promise<SummarizationResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error("ANTHROPIC_API_KEY が設定されていません");
+  const projectId = process.env.GCLOUD_PROJECT ?? process.env.GOOGLE_CLOUD_PROJECT;
+  if (!projectId) {
+    throw new Error("GCLOUD_PROJECT が取得できません");
   }
 
-  const client = new Anthropic({ apiKey });
-
-  // HTMLタグを除去してプレーンテキスト化
-  const plainContent = stripHtml(rawContent);
-
-  const message = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 2048,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: `以下の変更ログを日本語で要約してください。\n\nタイトル: ${originalTitle}\n\n内容:\n${plainContent}`,
-      },
-    ],
+  const vertexAI = new VertexAI({
+    project: projectId,
+    location: "asia-northeast1",
   });
 
-  // レスポンスからテキストを抽出
-  const textBlock = message.content.find((block) => block.type === "text");
-  if (!textBlock || textBlock.type !== "text") {
-    throw new Error("Anthropic API からテキストレスポンスが返りませんでした");
+  const model = vertexAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig: {
+      maxOutputTokens: 8192,
+      temperature: 0.2,
+    },
+    systemInstruction: {
+      role: "system",
+      parts: [{ text: SYSTEM_PROMPT }],
+    },
+  });
+
+  const plainContent = stripHtml(rawContent);
+  const prompt = `以下の変更ログを日本語で要約してください。\n\nタイトル: ${originalTitle}\n\n内容:\n${plainContent}`;
+
+  const result = await model.generateContent(prompt);
+  const text = result.response.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!text) {
+    throw new Error("Gemini から応答テキストが返りませんでした");
   }
 
-  // JSON をパース
-  const jsonMatch = textBlock.text.match(/\{[\s\S]*\}/);
+  // ```json ... ``` コードブロックを先に除去してからJSONを抽出
+  const stripped = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
+  const jsonMatch = stripped.match(/\{[\s\S]*\}/) ?? text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
-    throw new Error("Anthropic API のレスポンスから JSON を抽出できませんでした");
+    throw new Error(`Gemini の応答から JSON を抽出できませんでした: ${text.slice(0, 200)}`);
   }
 
   const parsed = JSON.parse(jsonMatch[0]) as SummarizationResult;

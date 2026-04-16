@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { AnalyticsProvider } from "@/components/AnalyticsProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,11 +17,11 @@ export const metadata: Metadata = {
     title: "Claude Digest - Claude 変更ログ日本語ダイジェスト",
     description:
       "Claude の公式変更ログを日本語に要約し、重要なポイントをわかりやすくまとめたダイジェスト記事を提供します。",
-    url: "https://claude-digest.web.app",
+    url: "https://claude-digest.com",
     siteName: "Claude Digest",
     images: [
       {
-        url: "https://claude-digest.web.app/ogp.png",
+        url: "https://claude-digest.com/ogp.png",
         width: 1200,
         height: 630,
         alt: "Claude Digest",
@@ -47,6 +48,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className="flex flex-col min-h-screen bg-gray-50">
         <QueryProvider>
+          <AnalyticsProvider />
           <Header />
           <div className="flex-1">{children}</div>
           <Footer />

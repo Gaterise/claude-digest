@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getFirestore, connectFirestoreEmulator, type Firestore } from "firebase/firestore";
+import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -8,6 +9,7 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 export const app: FirebaseApp =
@@ -23,3 +25,10 @@ if (
   connectFirestoreEmulator(db, "localhost", 8080);
 }
 
+/** Firebase Analytics（ブラウザ環境かつ measurementId が設定されている場合のみ初期化） */
+export async function initAnalytics(): Promise<Analytics | null> {
+  if (!process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID) return null;
+  const supported = await isSupported();
+  if (!supported) return null;
+  return getAnalytics(app);
+}
