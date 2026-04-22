@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   description:
     "Claude の公式変更ログを日本語に要約し、重要なポイントをわかりやすくまとめたダイジェスト記事を提供します。",
   icons: {
-    icon: "/icon-192x192.png",
-    apple: "/icon-192x192.png",
+    icon: "https://claude-digest.com/icon-192x192.png",
+    apple: "https://claude-digest.com/icon-192x192.png",
   },
   openGraph: {
     title: "Claude Digest - Claude 変更ログ日本語ダイジェスト",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     title: "Claude Digest - Claude 変更ログ日本語ダイジェスト",
     description:
       "Claude の公式変更ログを日本語に要約し、重要なポイントをわかりやすくまとめたダイジェスト記事を提供します。",
-    images: ["/ogp.png"],
+    images: ["https://claude-digest.com/ogp.png"],
   },
 };
 
