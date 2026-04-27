@@ -40,7 +40,7 @@ const router = (0, express_1.Router)();
 /** GET /digests — ダイジェスト記事一覧 */
 router.get("/", async (req, res, next) => {
     try {
-        const limit = Math.min(Math.max(parseInt(req.query.limit) || 20, 1), 50);
+        const limit = Math.min(Math.max(parseInt(req.query.limit) || 30, 1), 50);
         const cursor = req.query.cursor || undefined;
         const category = req.query.category || undefined;
         const from = req.query.from || undefined;

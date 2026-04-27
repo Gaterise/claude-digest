@@ -6,7 +6,7 @@ export const revalidate = 60; // ISR: 60秒
 export default async function Home() {
   let data;
   try {
-    data = await listDigests({ limit: 50 });
+    data = await listDigests({ limit: 30 });
   } catch {
     data = null;
   }
@@ -20,7 +20,7 @@ export default async function Home() {
             Claude の最新リリース情報を日本語でわかりやすくお届けします
           </p>
         </div>
-        <DigestList initialArticles={data?.items ?? []} />
+        <DigestList initialArticles={data?.items ?? []} initialNextCursor={data?.nextCursor ?? null} />
       </div>
     </main>
   );

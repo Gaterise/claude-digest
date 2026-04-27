@@ -1,35 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type {
   DigestArticleSummary,
   DigestCategory,
 } from "@/generated/api/claudeDigestAPI";
-import { useListDigests } from "@/generated/api/claudeDigestAPI";
+import { listDigests } from "@/generated/api/claudeDigestAPI";
 import { DigestCard } from "./DigestCard";
 import { CategoryFilter } from "./CategoryFilter";
 import { Loading } from "./ui/Loading";
 
+const PAGE_SIZE = 30;
+
 interface DigestListProps {
   initialArticles: DigestArticleSummary[];
+  initialNextCursor: string | null;
 }
 
-export function DigestList({ initialArticles }: DigestListProps) {
+export function DigestList({ initialArticles, initialNextCursor }: DigestListProps) {
   const [selectedCategory, setSelectedCategory] =
     useState<DigestCategory | null>(null);
 
-  // クライアントサイドでフィルタリング（TanStack Query hooks）
-  const { data, isLoading, isError } = useListDigests(
-    selectedCategory ? { category: selectedCategory } : undefined,
-    {
-      // SSR で取得した初期データを使用
-      initialData: selectedCategory
-        ? undefined
-        : { items: initialArticles, total: initialArticles.length, nextCursor: null },
-    }
-  );
+  // 表示中の記事リスト
+  const [articles, setArticles] = useState<DigestArticleSummary[]>(initialArticles);
+  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const articles = data?.items ?? initialArticles;
+  // カテゴリ変更時は先頭から取り直す
+  const handleCategoryChange = useCallback(async (category: DigestCategory | null) => {
+    setSelectedCategory(category);
+    setIsError(false);
+    setIsLoading(true);
+    try {
+      const result = await listDigests({
+        limit: PAGE_SIZE,
+        ...(category ? { category } : {}),
+      });
+      setArticles(result.items);
+      setNextCursor(result.nextCursor ?? null);
+    } catch {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // もっと見る
+  const handleLoadMore = useCallback(async () => {
+    if (!nextCursor || isLoadingMore) return;
+    setIsLoadingMore(true);
+    try {
+      const result = await listDigests({
+        limit: PAGE_SIZE,
+        cursor: nextCursor,
+        ...(selectedCategory ? { category: selectedCategory } : {}),
+      });
+      setArticles((prev) => [...prev, ...result.items]);
+      setNextCursor(result.nextCursor ?? null);
+    } catch {
+      // 失敗しても既存記事は維持
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [nextCursor, isLoadingMore, selectedCategory]);
 
   return (
     <div>
@@ -37,7 +72,7 @@ export function DigestList({ initialArticles }: DigestListProps) {
       <div className="mb-6">
         <CategoryFilter
           selected={selectedCategory}
-          onSelect={setSelectedCategory}
+          onSelect={handleCategoryChange}
         />
       </div>
 
@@ -60,7 +95,7 @@ export function DigestList({ initialArticles }: DigestListProps) {
           </p>
           {selectedCategory && (
             <button
-              onClick={() => setSelectedCategory(null)}
+              onClick={() => handleCategoryChange(null)}
               className="mt-2 text-sm text-blue-600 hover:text-blue-800"
             >
               フィルタを解除する
@@ -74,6 +109,19 @@ export function DigestList({ initialArticles }: DigestListProps) {
               <DigestCard key={article.id} article={article} />
             ))}
           </div>
+
+          {/* もっと見るボタン */}
+          {nextCursor && (
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="rounded-md border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+              >
+                {isLoadingMore ? "読み込み中..." : "もっと見る"}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

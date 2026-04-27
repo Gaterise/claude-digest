@@ -9,7 +9,7 @@ const router = Router();
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const limit = Math.min(
-      Math.max(parseInt(req.query.limit as string) || 20, 1),
+      Math.max(parseInt(req.query.limit as string) || 30, 1),
       50
     );
     const cursor = (req.query.cursor as string) || undefined;
