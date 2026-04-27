@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -46,6 +47,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
+      {/* <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1962613767621328"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head> */}
       <body className="flex flex-col min-h-screen bg-gray-50">
         <QueryProvider>
           <AnalyticsProvider />

@@ -35,19 +35,66 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-gray-800">3. Cookie について</h2>
+            <h2 className="text-lg font-semibold text-gray-800">3. Cookie および広告について</h2>
             <p className="text-sm text-gray-600 leading-relaxed">
-              本サービスは現在、Cookie を利用しておりません。
-              将来的に利用する場合は、本ポリシーを更新してお知らせします。
+              本サービスは、Google AdSense による広告を掲載しています。Google AdSense は Cookie を使用して、
+              ユーザーの過去の訪問履歴に基づいたパーソナライズ広告を表示することがあります。
+            </p>
+            <p className="text-sm text-gray-600 leading-relaxed mt-2">
+              Google によるCookieの使用については、
+              <a
+                href="https://policies.google.com/technologies/ads"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline mx-1"
+              >
+                Google の広告ポリシー
+              </a>
+              をご確認ください。
+            </p>
+            <p className="text-sm text-gray-600 leading-relaxed mt-2">
+              パーソナライズ広告を無効にしたい場合は、
+              <a
+                href="https://www.google.com/settings/ads"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline mx-1"
+              >
+                Google 広告設定ページ
+              </a>
+              からオプトアウトできます。
             </p>
           </section>
 
           <section>
             <h2 className="text-lg font-semibold text-gray-800">4. 第三者サービス</h2>
             <p className="text-sm text-gray-600 leading-relaxed">
-              本サービスは Firebase（Google LLC）をインフラとして利用しています。
-              Google のプライバシーポリシーが適用される場合があります。
+              本サービスは以下の第三者サービスを利用しています。各サービスのプライバシーポリシーが適用されます。
             </p>
+            <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside mt-2">
+              <li>
+                Firebase / Google Analytics（Google LLC）— インフラ・アクセス解析：
+                <a
+                  href="https://policies.google.com/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline ml-1"
+                >
+                  Google プライバシーポリシー
+                </a>
+              </li>
+              <li>
+                Google AdSense（Google LLC）— 広告配信：
+                <a
+                  href="https://policies.google.com/technologies/ads"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline ml-1"
+                >
+                  Google 広告ポリシー
+                </a>
+              </li>
+            </ul>
           </section>
 
           <section>
@@ -57,7 +104,18 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <p className="text-xs text-gray-400">最終更新日: 2026年4月15日</p>
+          <section>
+            <h2 className="text-lg font-semibold text-gray-800">6. お問い合わせ</h2>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              本ポリシーに関するご質問は、
+              <Link href="/contact" className="text-blue-600 hover:underline">
+                お問い合わせページ
+              </Link>
+              よりご連絡ください。
+            </p>
+          </section>
+
+          <p className="text-xs text-gray-400">最終更新日: 2026年4月24日</p>
         </div>
       </div>
     </main>

@@ -69,7 +69,43 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <p className="text-xs text-gray-400">最終更新日: 2026年4月15日</p>
+          <section>
+            <h2 className="text-lg font-semibold text-gray-800">6. 広告について</h2>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              本サービスは Google AdSense による広告を掲載しています。広告は Google LLC により配信され、
+              Cookie を使用してユーザーの興味・関心に基づいたパーソナライズ広告が表示される場合があります。
+            </p>
+            <p className="text-sm text-gray-600 leading-relaxed mt-2">
+              広告配信における Cookie の使用およびオプトアウトについては、
+              <a
+                href="/privacy"
+                className="text-blue-600 hover:underline mx-1"
+              >
+                プライバシーポリシー
+              </a>
+              をご確認ください。
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-semibold text-gray-800">7. 準拠法</h2>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              本規約は日本法を準拠法とします。
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-semibold text-gray-800">8. お問い合わせ</h2>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              本規約に関するご質問は、
+              <Link href="/contact" className="text-blue-600 hover:underline">
+                お問い合わせページ
+              </Link>
+              よりご連絡ください。
+            </p>
+          </section>
+
+          <p className="text-xs text-gray-400">最終更新日: 2026年4月24日</p>
         </div>
       </div>
     </main>

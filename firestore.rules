@@ -14,6 +14,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // お問い合わせメール送信用 (Trigger Email Extension が監視)
+    // 書き込みのみ許可、読み取りは不可
+    match /mail/{docId} {
+      allow read: if false;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+
     // デフォルト: 全て拒否
     match /{document=**} {
       allow read, write: if false;

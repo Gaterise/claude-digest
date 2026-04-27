@@ -55,6 +55,11 @@ export function Footer() {
                   利用規約
                 </Link>
               </li>
+              <li>
+                <Link href="/contact" className="text-xs text-gray-500 hover:text-gray-700">
+                  お問い合わせ
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
