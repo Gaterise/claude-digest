@@ -38,6 +38,10 @@ export interface HealthResponse {
   timestamp: string;
 }
 
+export interface ScrapeStatusResponse {
+  lastCheckedAt: string | null;
+}
+
 export interface ErrorResponse {
   error: string;
   message: string;

@@ -3,6 +3,7 @@ import cors from "cors";
 import healthRouter from "./routes/health";
 import digestsRouter from "./routes/digests";
 import contactRouter from "./routes/contact";
+import statusRouter from "./routes/status";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/v1/health", healthRouter);
 app.use("/v1/digests", digestsRouter);
 app.use("/v1/contact", contactRouter);
+app.use("/v1/status", statusRouter);
 
 // Error handler (must be last)
 app.use(errorHandler);

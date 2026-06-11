@@ -5,6 +5,7 @@ import { fetchAllGitHubReleases } from "./githubReleaseScraper";
 import { summarizeChangeLog } from "../summarizer/geminiSummarizer";
 import * as changeLogRepo from "../firestore/changeLogRepository";
 import * as digestRepo from "../firestore/digestRepository";
+import * as metaRepo from "../firestore/metaRepository";
 import type { ChangeLog } from "../types";
 
 /** ChangeLog 1件をダイジェスト記事に変換する共通処理 */
@@ -97,6 +98,9 @@ export const scheduledScrape = onSchedule(
           logger.error(`要約生成エラー (${changeLog.id}): ${msg}`);
         }
       }
+
+      // チェック完了日時を記録（フロントエンドで「最終チェック日時」として表示）
+      await metaRepo.updateLastCheckedAt();
 
       logger.info(
         `ポーリング完了: 再処理 ${errorLogs.length} 件 / 新規 ${newCount} 件 / 全 ${entries.length} 件`

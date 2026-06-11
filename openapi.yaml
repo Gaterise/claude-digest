@@ -27,6 +27,8 @@ tags:
     description: ダイジェスト記事の取得
   - name: health
     description: ヘルスチェック
+  - name: status
+    description: 公式リリースのチェック状況
 
 paths:
   /health:
@@ -42,6 +44,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
+
+  /status:
+    get:
+      operationId: getScrapeStatus
+      summary: 公式リリースの最終チェック日時を取得する
+      tags:
+        - status
+      responses:
+        "200":
+          description: 公式リリースのチェック状況
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScrapeStatusResponse"
+        "500":
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /digests:
     get:
@@ -252,6 +274,17 @@ components:
         timestamp:
           type: string
           format: date-time
+
+    ScrapeStatusResponse:
+      type: object
+      required:
+        - lastCheckedAt
+      properties:
+        lastCheckedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 公式リリースの最終チェック日時（ISO 8601）。未チェックの場合は null
 
     ErrorResponse:
       type: object
