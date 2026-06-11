@@ -19,6 +19,11 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-gray-900">リンク</h3>
             <ul className="mt-2 space-y-1">
               <li>
+                <Link href="/about" className="text-xs text-gray-500 hover:text-gray-700">
+                  このサイトについて
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://github.com/anthropics/claude-code/releases"
                   target="_blank"
