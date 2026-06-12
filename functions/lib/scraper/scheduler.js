@@ -41,6 +41,7 @@ const githubReleaseScraper_1 = require("./githubReleaseScraper");
 const geminiSummarizer_1 = require("../summarizer/geminiSummarizer");
 const changeLogRepo = __importStar(require("../firestore/changeLogRepository"));
 const digestRepo = __importStar(require("../firestore/digestRepository"));
+const metaRepo = __importStar(require("../firestore/metaRepository"));
 /** ChangeLog 1件をダイジェスト記事に変換する共通処理 */
 async function processOneChangeLog(changeLog, title) {
     await changeLogRepo.updateStatus(changeLog.id, "processing");
@@ -117,6 +118,8 @@ exports.scheduledScrape = (0, scheduler_1.onSchedule)({
                 firebase_functions_1.logger.error(`要約生成エラー (${changeLog.id}): ${msg}`);
             }
         }
+        // チェック完了日時を記録（フロントエンドで「最終チェック日時」として表示）
+        await metaRepo.updateLastCheckedAt();
         firebase_functions_1.logger.info(`ポーリング完了: 再処理 ${errorLogs.length} 件 / 新規 ${newCount} 件 / 全 ${entries.length} 件`);
     }
     catch (error) {

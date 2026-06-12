@@ -1,0 +1,1 @@
+{"version":3,"file":"metaRepository.d.ts","sourceRoot":"","sources":["../../src/firestore/metaRepository.ts"],"names":[],"mappings":"AAAA,OAAO,EAAgB,SAAS,EAAE,MAAM,0BAA0B,CAAC;AASnE,2BAA2B;AAC3B,wBAAsB,mBAAmB,IAAI,OAAO,CAAC,IAAI,CAAC,CAEzD;AAED,uCAAuC;AACvC,wBAAsB,gBAAgB,IAAI,OAAO,CAAC,SAAS,GAAG,IAAI,CAAC,CAIlE"}

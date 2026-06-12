@@ -24,6 +24,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/models" className="text-xs text-gray-500 hover:text-gray-700">
+                  Claude モデル比較
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://github.com/anthropics/claude-code/releases"
                   target="_blank"
