@@ -60,7 +60,7 @@ export function DigestCard({ article }: DigestCardProps) {
 
           {article.keyPoints.length > 0 && (
             <ul className="mt-1 space-y-0.5">
-              {article.keyPoints.slice(0, 2).map((point, i) => (
+              {article.keyPoints.slice(0, 3).map((point, i) => (
                 <li key={i} className="flex items-start text-xs text-gray-500">
                   <span className="mr-1.5 mt-1 h-1 w-1 flex-shrink-0 rounded-full bg-blue-300" />
                   <span className="line-clamp-1">{point}</span>

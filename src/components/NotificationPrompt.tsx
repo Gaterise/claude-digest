@@ -57,10 +57,10 @@ export function NotificationPrompt() {
     return (
       <div
         role="status"
-        className="mb-4 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
+        className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-xl border border-green-200 bg-white px-4 py-3 text-sm text-green-800 shadow-lg"
       >
         <svg
-          className="h-5 w-5 shrink-0"
+          className="h-5 w-5 shrink-0 text-green-500"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
@@ -73,14 +73,14 @@ export function NotificationPrompt() {
             d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
           />
         </svg>
-        プッシュ通知を有効にしました。変更ログが更新されたらお知らせします。
+        通知を有効にしました
       </div>
     );
   }
 
   return (
-    <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="fixed bottom-4 right-4 z-50 w-72 rounded-xl border border-gray-200 bg-white p-4 shadow-lg sm:w-80">
+      <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-2.5">
           <svg
             className="mt-0.5 h-5 w-5 shrink-0 text-blue-600"
@@ -97,37 +97,40 @@ export function NotificationPrompt() {
             />
           </svg>
           <div>
-            <p className="text-sm font-medium text-blue-900">
-              更新があったら通知を受け取りませんか？
+            <p className="text-sm font-medium text-gray-900">
+              更新通知を受け取りませんか？
             </p>
-            <p className="mt-0.5 text-xs text-blue-700">
-              Claude の変更ログが公開されたらプッシュ通知でお知らせします。
+            <p className="mt-0.5 text-xs text-gray-500">
+              新しい変更ログが公開されたらお知らせします。
             </p>
             {state === "error" && (
               <p className="mt-1 text-xs font-medium text-red-600">
-                通知の設定に失敗しました。時間をおいて再度お試しください。
+                設定に失敗しました。再度お試しください。
               </p>
             )}
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            onClick={handleEnable}
-            disabled={state === "enabling"}
-            className="rounded-full bg-blue-600 px-4 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {state === "enabling" ? "設定中..." : "通知を受け取る"}
-          </button>
-          <button
-            type="button"
-            onClick={handleDismiss}
-            disabled={state === "enabling"}
-            className="rounded-full px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            あとで
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleDismiss}
+          disabled={state === "enabling"}
+          className="shrink-0 rounded p-0.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 disabled:opacity-40"
+          aria-label="閉じる"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div className="mt-3 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={handleEnable}
+          disabled={state === "enabling"}
+          className="flex-1 rounded-lg bg-blue-600 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {state === "enabling" ? "設定中..." : "通知を受け取る"}
+        </button>
       </div>
     </div>
   );

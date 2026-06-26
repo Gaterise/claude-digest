@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { listDigests, getScrapeStatus } from "@/generated/api/claudeDigestAPI";
 import { DigestList } from "@/components/DigestList";
-import { NotificationPrompt } from "@/components/NotificationPrompt";
 
 export const revalidate = false; // スクレイパーからのオンデマンド再検証に一任
 
@@ -32,7 +31,6 @@ export default async function Home() {
   return (
     <main className="min-h-screen">
       <div className="mx-auto max-w-4xl px-3 sm:px-4 py-4 sm:py-6">
-        <NotificationPrompt />
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-gray-800">変更ログ一覧</h2>
