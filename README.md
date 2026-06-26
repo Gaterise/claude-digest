@@ -84,11 +84,24 @@ functions/
     scraper/        # 変更ログスクレイパー + スケジューラー
     summarizer/     # Claude API 要約生成
     firestore/      # Firestore リポジトリ
+    notifications/  # FCM プッシュ通知送信
 tests/
   unit/             # Vitest 単体テスト
   integration/      # 統合テスト (Firebase Emulator)
   e2e/              # Playwright E2E テスト
 ```
+
+## プッシュ通知
+
+変更ログの更新を FCM (Firebase Cloud Messaging) の Web Push で通知する。
+
+- 未設定のユーザーにはトップページに案内バナーを表示し、「通知を受け取る」で
+  通知許可の取得 → FCM トークン発行 → `POST /v1/notifications/subscribe` で
+  トピック `changelog-updates` への購読登録を行う
+- スケジューラーが新規ダイジェスト記事を公開したタイミングで、トピック購読者
+  全員にプッシュ通知を送信する（`functions/src/notifications/notificationSender.ts`）
+- 有効化には `NEXT_PUBLIC_FIREBASE_VAPID_KEY` の設定が必要
+  （Firebase Console > プロジェクトの設定 > Cloud Messaging > Web Push 証明書 で生成）
 
 ## ライセンス
 

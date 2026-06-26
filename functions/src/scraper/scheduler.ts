@@ -6,6 +6,7 @@ import { summarizeChangeLog } from "../summarizer/geminiSummarizer";
 import * as changeLogRepo from "../firestore/changeLogRepository";
 import * as digestRepo from "../firestore/digestRepository";
 import * as metaRepo from "../firestore/metaRepository";
+import { sendNewDigestNotification } from "../notifications/notificationSender";
 import type { ChangeLog } from "../types";
 
 /** ChangeLog 1件をダイジェスト記事に変換する共通処理 */
@@ -33,6 +34,9 @@ async function processOneChangeLog(
 
   await changeLogRepo.updateStatus(changeLog.id, "processed");
   logger.info(`ダイジェスト記事作成完了: ${article.id} (${changeLog.id})`);
+
+  // 購読者へプッシュ通知（送信失敗しても記事処理は成功扱い）
+  await sendNewDigestNotification(article);
 }
 
 /**

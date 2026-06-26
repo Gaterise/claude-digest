@@ -42,6 +42,7 @@ const geminiSummarizer_1 = require("../summarizer/geminiSummarizer");
 const changeLogRepo = __importStar(require("../firestore/changeLogRepository"));
 const digestRepo = __importStar(require("../firestore/digestRepository"));
 const metaRepo = __importStar(require("../firestore/metaRepository"));
+const notificationSender_1 = require("../notifications/notificationSender");
 /** ChangeLog 1件をダイジェスト記事に変換する共通処理 */
 async function processOneChangeLog(changeLog, title) {
     await changeLogRepo.updateStatus(changeLog.id, "processing");
@@ -61,6 +62,8 @@ async function processOneChangeLog(changeLog, title) {
     });
     await changeLogRepo.updateStatus(changeLog.id, "processed");
     firebase_functions_1.logger.info(`ダイジェスト記事作成完了: ${article.id} (${changeLog.id})`);
+    // 購読者へプッシュ通知（送信失敗しても記事処理は成功扱い）
+    await (0, notificationSender_1.sendNewDigestNotification)(article);
 }
 /**
  * 1時間ごとに anthropics/claude-code GitHub Releases API をポーリングし、
