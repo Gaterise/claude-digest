@@ -44,12 +44,28 @@ async function processOneChangeLog(
  * 新しいリリースがあれば AI 要約を生成してダイジェスト記事を作成する。
  * また、前回エラーになった ChangeLog を再処理する。
  */
+async function triggerRevalidation(): Promise<void> {
+  const url = process.env.NEXTJS_URL;
+  const secret = process.env.REVALIDATION_SECRET;
+  if (!url || !secret) {
+    logger.warn("NEXTJS_URL または REVALIDATION_SECRET が未設定のためキャッシュ再検証をスキップ");
+    return;
+  }
+  try {
+    await fetch(`${url}/api/revalidate?secret=${secret}`, { method: "POST" });
+    logger.info("Next.js キャッシュ再検証完了");
+  } catch (error) {
+    logger.warn("Next.js キャッシュ再検証リクエスト失敗:", error);
+  }
+}
+
 export const scheduledScrape = onSchedule(
   {
     schedule: "every 1 hours",
     region: "asia-northeast1",
     timeoutSeconds: 300,
     memory: "512MiB",
+    secrets: ["REVALIDATION_SECRET"],
   },
   async () => {
     logger.info("GitHub Releases ポーリング開始");
@@ -105,6 +121,9 @@ export const scheduledScrape = onSchedule(
 
       // チェック完了日時を記録（フロントエンドで「最終チェック日時」として表示）
       await metaRepo.updateLastCheckedAt();
+
+      // Next.js のキャッシュを無効化して最新データを即時反映
+      await triggerRevalidation();
 
       logger.info(
         `ポーリング完了: 再処理 ${errorLogs.length} 件 / 新規 ${newCount} 件 / 全 ${entries.length} 件`

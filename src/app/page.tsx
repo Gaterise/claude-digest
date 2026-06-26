@@ -3,7 +3,7 @@ import { listDigests, getScrapeStatus } from "@/generated/api/claudeDigestAPI";
 import { DigestList } from "@/components/DigestList";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
 
-export const revalidate = 60; // ISR: 60秒
+export const revalidate = false; // スクレイパーからのオンデマンド再検証に一任
 
 /** ISO 8601 文字列を日本時間の「YYYY年M月D日 HH:mm」形式に変換する */
 function formatLastCheckedAt(iso: string): string {
