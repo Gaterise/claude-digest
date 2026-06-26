@@ -9,6 +9,10 @@ runConfig:
 
 # Environment variables and secrets.
 env:
+  - variable: NEXT_PUBLIC_API_BASE_URL
+    value: "https://api-amq6j2fnfq-an.a.run.app/v1"
+    availability:
+      - BUILD
   - variable: NEXT_PUBLIC_FIREBASE_VAPID_KEY
     value: "BC4Dcbt8bModlEJAADTl3dBxCuXV0jgktxPMJixkAxddrTOur9F1tl6qli5ZzgwM8lENrnz0Pqj9GCdscdnlUOA"
     availability:
