@@ -10,7 +10,7 @@ runConfig:
 # Environment variables and secrets.
 env:
   - variable: NEXT_PUBLIC_FIREBASE_VAPID_KEY
-    value: "発行した公開鍵の値"
+    value: "BC4Dcbt8bModlEJAADTl3dBxCuXV0jgktxPMJixkAxddrTOur9F1tl6qli5ZzgwM8lENrnz0Pqj9GCdscdnlUOA"
     availability:
       - BUILD
   - variable: REVALIDATION_SECRET
