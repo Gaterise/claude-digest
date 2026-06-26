@@ -70,7 +70,7 @@
 - [x] T022 [P] [US1] Functions API `GET /digests` エンドポイントのコントラクトテストを作成する（`tests/integration/api/listDigests.test.ts`）— レスポンス型・ページネーション・空リストを検証
 - [x] T023 [P] [US1] Functions API `GET /digests/:id` エンドポイントのコントラクトテストを作成する（`tests/integration/api/getDigestById.test.ts`）— 正常系・404 を検証
 - [x] T024 [P] [US1] スクレイパーのユニットテストを作成する（`tests/unit/scraper/githubReleaseScraper.test.ts`）— GitHub Releases API レスポンスのパース・contentHash 生成（tagName+body）・重複検知ロジックを検証
-- [x] T025 [P] [US1] AI 要約生成のユニットテストを作成する（`tests/unit/summarizer/claudeSummarizer.test.ts`）— Anthropic API をモックして要約構造・カテゴリ分類を検証
+- [x] T025 [P] [US1] AI 要約生成のユニットテストを作成する（`tests/unit/summarizer/geminiSummarizer.test.ts`）— Vertex AI をモックして要約構造・カテゴリ分類を検証
 - [x] T026 [P] [US1] `DigestCard` コンポーネントのユニットテストを作成する（`tests/unit/components/DigestCard.test.tsx`）— タイトル・keyPoints・カテゴリバッジ・日付表示を検証
 - [x] T027 [P] [US1] `DigestDetail` コンポーネントのユニットテストを作成する（`tests/unit/components/DigestDetail.test.tsx`）— summary・keyPoints・sourceUrl リンクを検証
 - [x] T028 [P] [US1] ダイジェスト一覧 E2E テストを作成する（`tests/e2e/digest-list.spec.ts`）— 一覧表示・記事クリック→詳細遷移を検証（Playwright）
@@ -79,7 +79,7 @@
 ### 実装：Functions バックエンド
 
 - [x] T030 [P] [US1] GitHub Releases スクレイパーを実装する（`functions/src/scraper/githubReleaseScraper.ts`）— `https://api.github.com/repos/anthropics/claude-code/releases` から JSON を取得・パース・contentHash 生成（FR-001, FR-010）、T024 のテストを通過させる
-- [x] T031 [P] [US1] Claude API を使った日本語要約・カテゴリ分類ロジックを実装する（`functions/src/summarizer/claudeSummarizer.ts`）— claude-3-5-haiku を使って `title`, `summary`, `keyPoints`, `categories` を生成（FR-002, FR-008）、T025 のテストを通過させる
+- [x] T031 [P] [US1] Vertex AI（Gemini）を使った日本語要約・カテゴリ分類ロジックを実装する（`functions/src/summarizer/geminiSummarizer.ts`）— gemini-2.5-flash を使って `title`, `summary`, `keyPoints`, `categories` を生成（FR-002, FR-008）、T025 のテストを通過させる
 - [x] T032 [US1] Cloud Scheduler トリガーによる定期ポーリング Function を実装する（`functions/src/scraper/scheduler.ts`）— 30分ごとに scraper を実行・diff 検知・pending ChangeLog を Firestore に保存（FR-006）。T030, T031 に依存
 - [x] T033 [US1] Express + HTTP Function で API ルーターを実装する（`functions/src/api/index.ts`, `functions/src/api/middleware/errorHandler.ts`）— CORS・エラーハンドリング含む
 - [x] T034 [US1] `GET /health` エンドポイントを実装する（`functions/src/api/routes/health.ts`）— T021 のテストを通過させる
@@ -244,6 +244,6 @@ Task T039: "Loading.tsx 実装"
 - `[USn]` ラベルはタスクとユーザーストーリーのトレーサビリティを保証する
 - **TDD 厳守（Constitution I）**: テストは必ず先に書き、失敗（Red）を確認してから実装する
 - `src/generated/api/` は orval 自動生成のため手動編集禁止 — `npm run generate` で再生成すること
-- Functions の秘密値（`ANTHROPIC_API_KEY`）は `.env` ではなく Firebase Secret Manager で管理する
+- Functions の秘密値（`EMAILJS_PRIVATE_KEY`, `REVALIDATION_SECRET`）は `.env` ではなく Firebase Secret Manager で管理する
 - 各タスクまたは論理グループ完了後に git commit すること
 - 各フェーズの Checkpoint で独立テストを実行して確認すること

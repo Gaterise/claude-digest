@@ -36,9 +36,10 @@ NEXT_PUBLIC_FIREBASE_APP_ID=xxx
 NEXT_PUBLIC_API_BASE_URL=http://localhost:5001/claude-digest/asia-northeast1/api/v1
 ```
 
-Functions の秘密値（`ANTHROPIC_API_KEY` など）は Firebase Secret Manager で管理:
+Functions の秘密値は Firebase Secret Manager で管理:
 ```bash
-firebase functions:secrets:set ANTHROPIC_API_KEY
+firebase functions:secrets:set EMAILJS_PRIVATE_KEY
+firebase functions:secrets:set REVALIDATION_SECRET
 ```
 
 ---

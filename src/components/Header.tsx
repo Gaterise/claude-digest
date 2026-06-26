@@ -14,9 +14,16 @@ export function Header() {
               height={24}
               className="rounded-md sm:w-7 sm:h-7"
             />
-            <span className="text-sm sm:text-base font-bold text-gray-900">
-              Claude Digest
-            </span>
+            <div>
+              <span className="font-bold tracking-tight">
+                <span className="bg-gradient-to-r from-rose-700 to-orange-600 bg-clip-text text-transparent text-sm sm:text-base">
+                  Claude Digest
+                </span>
+              </span>
+              <p className="hidden sm:block text-xs text-gray-400 leading-tight">
+                Claude最新リリース情報の要点をまとめてお届けします
+              </p>
+            </div>
           </Link>
           <nav className="flex items-center gap-2 sm:gap-4">
             <a

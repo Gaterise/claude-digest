@@ -8,17 +8,17 @@ import { NotificationPrompt } from "@/components/NotificationPrompt";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Claude Digest - Claude 変更ログ日本語ダイジェスト",
+  title: "Claude Digest - Claude最新リリース情報の要点をわかりやすくお届けします",
   description:
-    "Claude の公式変更ログを日本語に要約し、重要なポイントをわかりやすくまとめたダイジェスト記事を提供します。",
+    "Claudeの公式変更ログを日本語に要約し、重要なポイントをわかりやすくまとめた記事を提供します。",
   icons: {
     icon: "https://claude-digest.com/icon-192x192.png",
     apple: "https://claude-digest.com/icon-192x192.png",
   },
   openGraph: {
-    title: "Claude Digest - Claude 変更ログ日本語ダイジェスト",
+    title: "Claude Digest - Claude最新リリース情報の要点をわかりやすくお届けします",
     description:
-      "Claude の公式変更ログを日本語に要約し、重要なポイントをわかりやすくまとめたダイジェスト記事を提供します。",
+      "Claudeの公式変更ログを日本語に要約し、重要なポイントをわかりやすくまとめた記事を提供します。",
     url: "https://claude-digest.com",
     siteName: "Claude Digest",
     images: [
@@ -34,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Claude Digest - Claude 変更ログ日本語ダイジェスト",
+    title: "Claude Digest - Claude最新リリース情報の要点をわかりやすくお届けします",
     description:
-      "Claude の公式変更ログを日本語に要約し、重要なポイントをわかりやすくまとめたダイジェスト記事を提供します。",
+      "Claudeの公式変更ログを日本語に要約し、重要なポイントをわかりやすくまとめた記事を提供します。",
     images: ["https://claude-digest.com/ogp.png"],
   },
 };

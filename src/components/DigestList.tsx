@@ -104,7 +104,7 @@ export function DigestList({ initialArticles, initialNextCursor }: DigestListPro
         </div>
       ) : (
         <div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {articles.map((article) => (
               <DigestCard key={article.id} article={article} />
             ))}

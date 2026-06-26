@@ -6,7 +6,7 @@ initializeApp();
 
 // HTTP API Function
 export const api = onRequest(
-  { region: "asia-northeast1", cors: true, secrets: ["ANTHROPIC_API_KEY", "EMAILJS_PRIVATE_KEY"] },
+  { region: "asia-northeast1", cors: true, secrets: ["EMAILJS_PRIVATE_KEY"] },
   async (req, res) => {
     // Dynamic import to avoid cold start overhead
     const { default: app } = await import("./api/index");

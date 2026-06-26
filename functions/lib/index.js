@@ -39,7 +39,7 @@ const https_1 = require("firebase-functions/v2/https");
 // Firebase Admin 初期化
 (0, app_1.initializeApp)();
 // HTTP API Function
-exports.api = (0, https_1.onRequest)({ region: "asia-northeast1", cors: true, secrets: ["ANTHROPIC_API_KEY", "EMAILJS_PRIVATE_KEY"] }, async (req, res) => {
+exports.api = (0, https_1.onRequest)({ region: "asia-northeast1", cors: true, secrets: ["EMAILJS_PRIVATE_KEY"] }, async (req, res) => {
     // Dynamic import to avoid cold start overhead
     const { default: app } = await Promise.resolve().then(() => __importStar(require("./api/index")));
     app(req, res);

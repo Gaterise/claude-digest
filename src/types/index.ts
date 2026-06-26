@@ -23,6 +23,16 @@ export const CATEGORY_LABELS: Record<string, string> = {
   other: "その他",
 };
 
+/** カテゴリのアイコンマッピング */
+export const CATEGORY_ICONS: Record<string, string> = {
+  new_feature: "✨",
+  improvement: "⬆️",
+  bug_fix: "🐛",
+  deprecation: "⚠️",
+  breaking_change: "⚡",
+  other: "•••",
+};
+
 /** カテゴリの色マッピング (Tailwind クラス) */
 export const CATEGORY_COLORS: Record<string, string> = {
   new_feature: "bg-green-100 text-green-800",
