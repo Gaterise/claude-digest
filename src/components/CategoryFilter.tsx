@@ -1,7 +1,7 @@
 "use client";
 
 import type { DigestCategory } from "@/generated/api/claudeDigestAPI";
-import { CATEGORY_LABELS, CATEGORY_ICONS } from "@/types";
+import { CATEGORY_LABELS } from "@/types";
 
 interface CategoryFilterProps {
   selected: DigestCategory | null;
