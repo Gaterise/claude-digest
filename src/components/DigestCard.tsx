@@ -21,6 +21,7 @@ export function DigestCard({ article }: DigestCardProps) {
   return (
     <Link
       href={`/digests/${article.id}`}
+      prefetch={false}
       data-testid="digest-card"
       className="block rounded-lg border border-gray-200 bg-white px-3 py-3 sm:px-4 transition-all hover:shadow-sm hover:border-blue-200 hover:bg-blue-50/30"
     >
