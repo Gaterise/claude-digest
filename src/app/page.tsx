@@ -1,32 +1,12 @@
 import Link from "next/link";
-import { listDigests, getScrapeStatus } from "@/generated/api/claudeDigestAPI";
+import { listDigests } from "@/generated/api/claudeDigestAPI";
 import { DigestList } from "@/components/DigestList";
+import { LastCheckedAt } from "@/components/LastCheckedAt";
 
 export const revalidate = false; // スクレイパーからのオンデマンド再検証に一任
 
-/** ISO 8601 文字列を日本時間の「YYYY年M月D日 HH:mm」形式に変換する */
-function formatLastCheckedAt(iso: string): string {
-  const parts = new Intl.DateTimeFormat("ja-JP", {
-    timeZone: "Asia/Tokyo",
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(new Date(iso));
-  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-  return `${get("year")}年${get("month")}月${get("day")}日 ${get("hour")}:${get("minute")}`;
-}
-
 export default async function Home() {
-  const [digestsResult, statusResult] = await Promise.allSettled([
-    listDigests({ limit: 30 }),
-    getScrapeStatus(),
-  ]);
-  const data = digestsResult.status === "fulfilled" ? digestsResult.value : null;
-  const lastCheckedAt =
-    statusResult.status === "fulfilled" ? statusResult.value.lastCheckedAt : null;
+  const data = await listDigests({ limit: 30 }).catch(() => null);
 
   return (
     <main className="min-h-screen">
@@ -34,25 +14,7 @@ export default async function Home() {
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-gray-800">変更ログ一覧</h2>
-            {lastCheckedAt && (
-              <p className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-                <svg
-                  className="h-3.5 w-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                  />
-                </svg>
-                公式リリース最終チェック: {formatLastCheckedAt(lastCheckedAt)}
-              </p>
-            )}
+            <LastCheckedAt />
           </div>
           <div className="flex flex-wrap gap-2">
           <Link
