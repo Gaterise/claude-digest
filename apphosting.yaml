@@ -17,10 +17,6 @@ env:
     value: "BC4Dcbt8bModlEJAADTl3dBxCuXV0jgktxPMJixkAxddrTOur9F1tl6qli5ZzgwM8lENrnz0Pqj9GCdscdnlUOA"
     availability:
       - BUILD
-  - variable: REVALIDATION_SECRET
-    secret: REVALIDATION_SECRET
-    availability:
-      - RUNTIME
 # env:
   # Configure environment variables.
   # See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment

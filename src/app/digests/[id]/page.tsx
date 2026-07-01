@@ -4,7 +4,7 @@ import { getDigestById } from "@/generated/api/claudeDigestAPI";
 import { DigestDetail } from "@/components/DigestDetail";
 import Link from "next/link";
 
-export const revalidate = 300; // ISR: 5分
+export const revalidate = false
 
 interface PageProps {
   params: Promise<{ id: string }>;

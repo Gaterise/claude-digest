@@ -244,6 +244,6 @@ Task T039: "Loading.tsx 実装"
 - `[USn]` ラベルはタスクとユーザーストーリーのトレーサビリティを保証する
 - **TDD 厳守（Constitution I）**: テストは必ず先に書き、失敗（Red）を確認してから実装する
 - `src/generated/api/` は orval 自動生成のため手動編集禁止 — `npm run generate` で再生成すること
-- Functions の秘密値（`EMAILJS_PRIVATE_KEY`, `REVALIDATION_SECRET`）は `.env` ではなく Firebase Secret Manager で管理する
+- Functions の秘密値（`EMAILJS_PRIVATE_KEY`）は `.env` ではなく Firebase Secret Manager で管理する
 - 各タスクまたは論理グループ完了後に git commit すること
 - 各フェーズの Checkpoint で独立テストを実行して確認すること

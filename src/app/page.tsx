@@ -2,7 +2,7 @@ import { listDigests } from "@/generated/api/claudeDigestAPI";
 import { DigestList } from "@/components/DigestList";
 import { LastCheckedAt } from "@/components/LastCheckedAt";
 
-export const revalidate = false; // スクレイパーからのオンデマンド再検証に一任
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const data = await listDigests({ limit: 30 }).catch(() => null);
