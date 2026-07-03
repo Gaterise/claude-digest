@@ -29,6 +29,8 @@ tags:
     description: ヘルスチェック
   - name: status
     description: 公式リリースのチェック状況
+  - name: trends
+    description: X / Threads で話題の AI トレンド
 
 paths:
   /health:
@@ -58,6 +60,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ScrapeStatusResponse"
+        "500":
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /trends:
+    get:
+      operationId: getTrends
+      summary: AI トレンド一覧を取得する
+      description: |
+        Google検索グラウンディング付き Gemini が定期生成した
+        X / Threads で話題の AI トレンドトピックを返す。
+      tags:
+        - trends
+      responses:
+        "200":
+          description: AI トレンド一覧（未生成の場合は items が空配列、generatedAt が null）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrendsResponse"
         "500":
           description: サーバーエラー
           content:
@@ -285,6 +310,39 @@ components:
           format: date-time
           nullable: true
           description: 公式リリースの最終チェック日時（ISO 8601）。未チェックの場合は null
+
+    TrendItem:
+      type: object
+      required:
+        - title
+        - summary
+        - keyword
+      properties:
+        title:
+          type: string
+          description: トピック名
+        summary:
+          type: string
+          description: 1〜2文の日本語解説
+        keyword:
+          type: string
+          description: X / Threads の検索リンク生成に使うキーワード
+
+    TrendsResponse:
+      type: object
+      required:
+        - items
+        - generatedAt
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendItem"
+        generatedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: トレンドの生成日時（ISO 8601）。未生成の場合は null
 
     ErrorResponse:
       type: object

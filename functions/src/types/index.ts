@@ -39,3 +39,18 @@ export interface DigestArticle {
 /** Firestore に保存する際に id を除いた型 */
 export type ChangeLogCreate = Omit<ChangeLog, "id">;
 export type DigestArticleCreate = Omit<DigestArticle, "id">;
+
+/** X / Threads で話題の AI トレンドトピック（Gemini により自動生成） */
+export interface TrendItem {
+  /** トピック名（例: "GPT-5の新機能が話題"） */
+  title: string;
+  /** 1〜2文の日本語解説 */
+  summary: string;
+  /** X / Threads の検索リンク生成に使うキーワード */
+  keyword: string;
+}
+
+export interface AiTrends {
+  items: TrendItem[];
+  generatedAt: Timestamp;
+}

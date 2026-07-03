@@ -16,9 +16,10 @@ import type {
   DigestArticleDetail,
   HealthResponse,
   ScrapeStatusResponse,
+  TrendsResponse,
 } from "./model";
 
-export type { DigestCategory, DigestArticleSummary, DigestArticleDetail, ListDigestsResponse, ListDigestsParams, HealthResponse, ScrapeStatusResponse, ErrorResponse } from "./model";
+export type { DigestCategory, DigestArticleSummary, DigestArticleDetail, ListDigestsResponse, ListDigestsParams, HealthResponse, ScrapeStatusResponse, TrendItem, TrendsResponse, ErrorResponse } from "./model";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5001/claude-digest/asia-northeast1/api/v1";
@@ -69,6 +70,13 @@ export const getScrapeStatus = async (
   return data;
 };
 
+export const getTrends = async (
+  config?: AxiosRequestConfig
+): Promise<TrendsResponse> => {
+  const { data } = await apiClient.get<TrendsResponse>("/trends", config);
+  return data;
+};
+
 // --- TanStack Query Hooks（Client Component から使用） ---
 
 export const getListDigestsQueryKey = (params?: ListDigestsParams): QueryKey => [
@@ -114,6 +122,18 @@ export const useGetScrapeStatus = (
   return useQuery<ScrapeStatusResponse>({
     queryKey: getGetScrapeStatusQueryKey(),
     queryFn: () => getScrapeStatus(),
+    ...options,
+  });
+};
+
+export const getGetTrendsQueryKey = (): QueryKey => ["trends"];
+
+export const useGetTrends = (
+  options?: Partial<UseQueryOptions<TrendsResponse>>
+) => {
+  return useQuery<TrendsResponse>({
+    queryKey: getGetTrendsQueryKey(),
+    queryFn: () => getTrends(),
     ...options,
   });
 };

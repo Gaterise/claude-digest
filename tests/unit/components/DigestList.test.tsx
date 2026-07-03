@@ -37,7 +37,7 @@ function renderWithProviders(ui: React.ReactElement) {
 
 describe("DigestList コンポーネント", () => {
   it("カテゴリフィルタ UI を表示する", () => {
-    renderWithProviders(<DigestList initialArticles={mockArticles} />);
+    renderWithProviders(<DigestList initialArticles={mockArticles} initialNextCursor={null} />);
     expect(screen.getByText("すべて")).toBeInTheDocument();
     // 「新機能」はフィルタボタンとカードバッジの両方に表示されるため getAllByText を使用
     expect(screen.getAllByText("新機能").length).toBeGreaterThanOrEqual(1);
@@ -45,7 +45,7 @@ describe("DigestList コンポーネント", () => {
   });
 
   it("初期データとして記事一覧を表示する", () => {
-    renderWithProviders(<DigestList initialArticles={mockArticles} />);
+    renderWithProviders(<DigestList initialArticles={mockArticles} initialNextCursor={null} />);
     expect(screen.getByText("テスト記事1")).toBeInTheDocument();
     expect(screen.getByText("テスト記事2")).toBeInTheDocument();
   });

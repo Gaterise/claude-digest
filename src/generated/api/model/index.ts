@@ -42,6 +42,17 @@ export interface ScrapeStatusResponse {
   lastCheckedAt: string | null;
 }
 
+export interface TrendItem {
+  title: string;
+  summary: string;
+  keyword: string;
+}
+
+export interface TrendsResponse {
+  items: TrendItem[];
+  generatedAt: string | null;
+}
+
 export interface ErrorResponse {
   error: string;
   message: string;

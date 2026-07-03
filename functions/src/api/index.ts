@@ -5,6 +5,7 @@ import digestsRouter from "./routes/digests";
 import contactRouter from "./routes/contact";
 import statusRouter from "./routes/status";
 import notificationsRouter from "./routes/notifications";
+import trendsRouter from "./routes/trends";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -19,6 +20,7 @@ app.use("/v1/digests", digestsRouter);
 app.use("/v1/contact", contactRouter);
 app.use("/v1/status", statusRouter);
 app.use("/v1/notifications", notificationsRouter);
+app.use("/v1/trends", trendsRouter);
 
 // Error handler (must be last)
 app.use(errorHandler);

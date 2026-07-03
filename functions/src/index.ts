@@ -16,3 +16,6 @@ export const api = onRequest(
 
 // Scheduled Scraper Function
 export { scheduledScrape } from "./scraper/scheduler";
+
+// Scheduled AI Trends Function
+export { scheduledTrends } from "./summarizer/trendScheduler";
