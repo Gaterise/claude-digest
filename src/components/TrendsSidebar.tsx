@@ -102,10 +102,10 @@ export function TrendsSidebar() {
   return (
     <section
       data-testid="trends-sidebar"
-      className="rounded-lg border border-gray-200 bg-white"
+      className="rounded-lg border border-gray-200 bg-white lg:flex lg:max-h-[calc(100vh-6rem)] lg:flex-col"
       aria-label="AIトレンド"
     >
-      <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2.5">
+      <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-100 px-3 py-2.5">
         <h2 className="text-sm font-semibold text-gray-800">AIトレンド</h2>
         <div className="flex items-center gap-1.5 text-gray-400">
           <XIcon className="h-3 w-3" />
@@ -115,13 +115,13 @@ export function TrendsSidebar() {
       </div>
 
       {isLoading ? (
-        <ul className="divide-y divide-gray-100">
+        <ul className="divide-y divide-gray-100 lg:min-h-0 lg:overflow-y-auto">
           {Array.from({ length: 5 }).map((_, i) => (
             <TrendSkeleton key={i} />
           ))}
         </ul>
       ) : items.length > 0 ? (
-        <ul className="divide-y divide-gray-100">
+        <ul className="divide-y divide-gray-100 lg:min-h-0 lg:overflow-y-auto">
           {items.map((item, i) => (
             <TrendCard key={`${item.keyword}-${i}`} item={item} rank={i + 1} />
           ))}
@@ -132,7 +132,7 @@ export function TrendsSidebar() {
         </p>
       )}
 
-      <div className="border-t border-gray-100 px-3 py-2">
+      <div className="flex-shrink-0 border-t border-gray-100 px-3 py-2">
         <p className="text-[10px] leading-relaxed text-gray-400">
           Google検索をもとにAIが自動生成
           {data?.generatedAt && ` ・ 更新: ${formatGeneratedAt(data.generatedAt)}`}

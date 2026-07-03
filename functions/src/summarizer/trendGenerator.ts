@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { logger } from "firebase-functions";
 import type { TrendItem } from "../types";
 
 const SYSTEM_PROMPT = `あなたはSNS（X・Threads）上のAI関連トレンドを調査するリサーチャーです。
@@ -39,23 +40,37 @@ export async function generateAiTrends(): Promise<TrendItem[]> {
     day: "numeric",
   });
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: `今日は${today}です。直近数日でX（旧Twitter）やThreadsなどのSNSで話題になっているAI関連トレンドを検索して調べ、指定のJSON形式で5件出力してください。`,
-    config: {
-      systemInstruction: SYSTEM_PROMPT,
-      tools: [{ googleSearch: {} }],
-      temperature: 0.3,
-      maxOutputTokens: 8192,
-    },
-  });
+  const MAX_ATTEMPTS = 3;
+  let lastError: unknown;
 
-  const text = response.text;
-  if (!text) {
-    throw new Error("Gemini から応答テキストが返りませんでした");
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: `今日は${today}です。直近数日でX（旧Twitter）やThreadsなどのSNSで話題になっているAI関連トレンドを検索して調べ、指定のJSON形式で5件出力してください。`,
+        config: {
+          systemInstruction: SYSTEM_PROMPT,
+          tools: [{ googleSearch: {} }],
+          temperature: 0.3,
+          maxOutputTokens: 8192,
+        },
+      });
+
+      const text = response.text;
+      if (!text) {
+        throw new Error("Gemini から応答テキストが返りませんでした");
+      }
+
+      return parseTrendItems(text);
+    } catch (error) {
+      lastError = error;
+      if (attempt < MAX_ATTEMPTS) {
+        logger.warn(`AIトレンド生成 ${attempt} 回目失敗、リトライします:`, error);
+      }
+    }
   }
 
-  return parseTrendItems(text);
+  throw lastError;
 }
 
 /** Gemini の応答テキストから TrendItem 配列を抽出・検証する */
@@ -67,8 +82,8 @@ export function parseTrendItems(text: string): TrendItem[] {
     throw new Error(`Gemini の応答から JSON 配列を抽出できませんでした: ${text.slice(0, 200)}`);
   }
 
-  const parsed = JSON.parse(jsonMatch[0]) as unknown;
-  if (!Array.isArray(parsed) || parsed.length === 0) {
+  const parsed = parseArrayLeniently(jsonMatch[0]);
+  if (parsed.length === 0) {
     throw new Error("トレンド項目が1件以上必要です");
   }
 
@@ -96,4 +111,27 @@ export function parseTrendItems(text: string): TrendItem[] {
   }
 
   return items;
+}
+
+/**
+ * JSON配列文字列をパースする。全体のパースに失敗した場合は、
+ * 各オブジェクトを個別にパースして壊れた項目のみスキップする
+ * （LLM出力に未エスケープの引用符などが混入するケースへの対策）。
+ */
+function parseArrayLeniently(json: string): unknown[] {
+  try {
+    const parsed = JSON.parse(json) as unknown;
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    const objects = json.match(/\{[^{}]*\}/g) ?? [];
+    const salvaged: unknown[] = [];
+    for (const obj of objects) {
+      try {
+        salvaged.push(JSON.parse(obj));
+      } catch {
+        // 壊れた項目はスキップ
+      }
+    }
+    return salvaged;
+  }
 }
