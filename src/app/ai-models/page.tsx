@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { mono } from "@/app/fonts";
 import { getModelComparison } from "@/generated/api/claudeDigestAPI";
 import { ModelComparisonTabs } from "@/components/models/ModelComparisonTabs";
 import { BenchmarkPanel } from "@/components/models/BenchmarkPanel";
@@ -29,7 +28,7 @@ export default async function AiModelsPage({ searchParams }: AiModelsPageProps) 
   const initialTab = parseTab(tab);
 
   return (
-    <main className={`${mono.variable} min-h-screen`}>
+    <main className="min-h-screen">
       <div className="mx-auto max-w-5xl px-4 py-8">
         <nav className="mb-6">
           <Link href="/" className="text-sm text-blue-600 hover:text-blue-800">

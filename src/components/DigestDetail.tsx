@@ -1,137 +1,139 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { DigestArticleDetail } from "@/generated/api/claudeDigestAPI";
-import { CategoryBadge } from "./CategoryBadge";
+import { formatJstTime, getJstDateParts } from "@/lib/digestLedger";
+import { LedgerCategoryMarks } from "./LedgerCategoryMarks";
 
 interface DigestDetailProps {
   article: DigestArticleDetail;
 }
 
+const PROSE_CLASS = [
+  "prose max-w-none text-[15px] leading-[1.95] text-ink/90 sm:text-base",
+  "prose-headings:scroll-mt-20 prose-headings:font-mincho prose-headings:font-bold prose-headings:text-ink",
+  "prose-h2:mt-12 prose-h2:border-b prose-h2:border-ink prose-h2:pb-2 prose-h2:text-xl prose-h2:tracking-[0.04em]",
+  "prose-h3:mt-8 prose-h3:text-lg",
+  "prose-p:text-ink/90 prose-strong:text-ink prose-li:my-1 prose-li:marker:text-shu",
+  "prose-a:text-shu prose-a:decoration-shu/40 prose-a:underline-offset-4 hover:prose-a:decoration-shu",
+  "prose-blockquote:border-l-shu prose-blockquote:font-mincho prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-ink-soft [&_blockquote_p]:before:content-none [&_blockquote_p]:after:content-none",
+  "prose-hr:border-rule",
+  "prose-code:rounded-none prose-code:bg-paper-deep prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.85em] prose-code:font-normal prose-code:text-ink prose-code:before:content-none prose-code:after:content-none",
+  "prose-pre:rounded-none prose-pre:border prose-pre:border-ink prose-pre:bg-ink prose-pre:text-paper [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-paper",
+  "prose-th:border-b prose-th:border-ink prose-th:font-mincho prose-th:text-ink prose-td:border-rule",
+].join(" ");
+
 export function DigestDetail({ article }: DigestDetailProps) {
-  const formattedDate = new Date(article.publishedAt).toLocaleDateString(
-    "ja-JP",
-    { year: "numeric", month: "long", day: "numeric" }
-  );
+  const date = getJstDateParts(article.publishedAt);
 
   return (
-    <article className="mx-auto max-w-3xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-      {/* ヘッダー */}
-      <header className="border-b border-gray-100 px-5 py-6 sm:px-8 sm:py-8">
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          {article.categories.map((category) => (
-            <CategoryBadge key={category} category={category} />
-          ))}
+    <article className="mx-auto max-w-3xl text-ink">
+      {/* 見出し */}
+      <header className="motion-safe:animate-ledger-rise">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink pb-2 font-mono text-[10px] uppercase tracking-[0.3em] text-ink-soft">
+          <span>Claude Code Release Ledger</span>
+          <span className="normal-case tracking-[0.15em]">Release Note</span>
         </div>
 
-        <h1 className="text-2xl font-bold leading-snug text-gray-900 sm:text-3xl">
-          {article.title}
-        </h1>
-
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
-          <time dateTime={article.publishedAt} className="inline-flex items-center gap-1.5">
-            <svg
-              className="h-4 w-4 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              aria-hidden="true"
+        <div className="grid gap-x-8 gap-y-5 py-7 sm:grid-cols-[9.5rem_minmax(0,1fr)] sm:py-9">
+          {/* 版数と掲載日時 */}
+          <div className="flex items-end justify-between gap-4 border-b border-rule pb-4 sm:block sm:border-b-0 sm:border-r sm:pb-0 sm:pr-6">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink-faint">Version</p>
+              {article.originalVersion ? (
+                <p className="mt-1 font-numeral leading-none">
+                  <span className="mr-0.5 align-top text-sm italic text-ink-faint">v</span>
+                  <span className="text-[2.6rem] font-semibold tracking-tight tabular-nums sm:text-5xl">
+                    {article.originalVersion}
+                  </span>
+                </p>
+              ) : (
+                <p className="mt-1 font-mincho text-4xl font-extrabold leading-none text-shu">号外</p>
+              )}
+            </div>
+            <time
+              dateTime={article.publishedAt}
+              className="block text-right sm:mt-5 sm:text-left"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
-              />
-            </svg>
-            {formattedDate}
-          </time>
-          {article.originalVersion && (
-            <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 font-mono text-xs font-medium text-gray-600">
-              v{article.originalVersion}
-            </span>
-          )}
+              <span className="sr-only">{date.label}</span>
+              <span aria-hidden="true" className="block font-mono text-[10px] tracking-[0.2em] text-ink-faint">
+                {date.year}
+              </span>
+              <span aria-hidden="true" className="block whitespace-nowrap font-mincho text-[15px] text-ink">
+                {date.month}月{date.day}日<span className="text-shu">（{date.weekday}）</span>
+              </span>
+              <span className="mt-1 block font-mono text-[11px] tracking-wider text-ink-faint">
+                {formatJstTime(article.publishedAt)}
+              </span>
+            </time>
+          </div>
+
+          <div className="min-w-0">
+            <LedgerCategoryMarks categories={article.categories} size="md" className="mb-3" />
+            <h1 className="font-mincho text-[1.7rem] font-extrabold leading-[1.45] tracking-[0.02em] text-ink sm:text-[2.2rem]">
+              {article.title}
+            </h1>
+          </div>
         </div>
+        <div aria-hidden="true" className="h-[5px] border-y border-ink" />
       </header>
 
-      <div className="px-5 py-6 sm:px-8 sm:py-8">
-        {/* 重要ポイント */}
-        <section className="mb-8 rounded-lg border border-blue-100 bg-blue-50/70 p-5 sm:p-6">
-          <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-blue-900">
-            <svg
-              className="h-5 w-5 text-blue-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"
-              />
-            </svg>
-            重要ポイント
+      {/* 要点（囲み記事） */}
+      <section
+        aria-labelledby="digest-keypoints"
+        className="relative mt-9 border-[3px] border-double border-ink bg-paper-deep/50 px-5 pb-5 pt-7 motion-safe:animate-ledger-rise sm:px-7 [animation-delay:120ms]"
+      >
+        <div className="absolute -top-3 left-4 flex items-center gap-2 bg-paper px-2 sm:left-6">
+          <h2 id="digest-keypoints" className="font-mincho text-base font-bold tracking-[0.4em] text-ink">
+            要点
           </h2>
-          <ul className="space-y-3">
-            {article.keyPoints.map((point, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-3 text-sm leading-relaxed text-blue-950 sm:text-base"
-              >
-                <svg
-                  className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                  />
-                </svg>
-                {point}
-              </li>
-            ))}
-          </ul>
-        </section>
+          <span className="font-mono text-[10px] tracking-[0.2em] text-ink-faint">
+            {article.keyPoints.length} POINTS
+          </span>
+        </div>
+        <ol className="space-y-3">
+          {article.keyPoints.map((point, i) => (
+            <li key={i} className="grid grid-cols-[1.75rem_minmax(0,1fr)] items-baseline gap-2">
+              <span aria-hidden="true" className="font-numeral text-xl italic leading-none text-shu">
+                {i + 1}
+              </span>
+              <span className="text-[15px] leading-relaxed text-ink">{point}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
 
-        {/* 要約本文（Markdown） */}
-        <section className="prose prose-gray max-w-none prose-headings:scroll-mt-16 prose-h2:mt-10 prose-h2:border-b prose-h2:border-gray-100 prose-h2:pb-2 prose-h2:text-xl prose-h3:text-lg prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:font-normal prose-code:text-gray-800 prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-lg prose-li:my-1">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {article.summary}
-          </ReactMarkdown>
-        </section>
-
-        {/* 公式リンク */}
-        <footer className="mt-10 border-t border-gray-100 pt-6">
-          <a
-            href={article.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-          >
-            公式変更ログを見る
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-              />
-            </svg>
-          </a>
-        </footer>
+      {/* 本文 */}
+      <div className={`mt-10 ${PROSE_CLASS}`}>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.summary}</ReactMarkdown>
       </div>
+
+      <p aria-hidden="true" className="mt-10 text-right font-mincho text-sm tracking-[0.3em] text-ink-faint">
+        （了）
+      </p>
+
+      {/* 出典 */}
+      <section aria-labelledby="digest-source" className="mt-6 border-t-2 border-ink pt-4">
+        <div className="grid gap-3 sm:grid-cols-[6rem_minmax(0,1fr)] sm:gap-6">
+          <h2 id="digest-source" className="font-mincho text-sm font-bold tracking-[0.4em] text-ink">
+            出典
+          </h2>
+          <div className="min-w-0">
+            <p className="text-[13px] leading-relaxed text-ink-soft">
+              本記事は Claude Code の公式リリースノートを AI で日本語に要約したものです。正確な内容は原文をご確認ください。
+            </p>
+            <a
+              href={article.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group mt-3 inline-flex items-baseline gap-2 font-mincho text-[15px] font-bold text-shu"
+            >
+              <span className="ledger-underline">公式変更ログを見る</span>
+              <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
+            </a>
+            <p className="mt-1 truncate font-mono text-[11px] text-ink-faint">{article.sourceUrl}</p>
+          </div>
+        </div>
+      </section>
     </article>
   );
 }

@@ -42,13 +42,14 @@ export default async function DigestDetailPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen">
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <nav className="mb-6">
+      <div className="mx-auto max-w-4xl px-4 pb-16 pt-6 sm:px-6 sm:pt-8">
+        <nav aria-label="パンくず" className="mb-8">
           <Link
             href="/"
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="group inline-flex items-baseline gap-2 font-mincho text-sm text-ink-soft transition-colors hover:text-shu"
           >
-            ← ダイジェスト一覧に戻る
+            <span aria-hidden="true" className="transition-transform group-hover:-translate-x-0.5">←</span>
+            <span className="ledger-underline">変更ログ台帳へ戻る</span>
           </Link>
         </nav>
         <DigestDetail article={article} />

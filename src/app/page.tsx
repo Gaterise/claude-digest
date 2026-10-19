@@ -2,7 +2,6 @@ import { listDigests } from "@/generated/api/claudeDigestAPI";
 import { DigestList } from "@/components/DigestList";
 import { LastCheckedAt } from "@/components/LastCheckedAt";
 import { TrendsSidebar } from "@/components/TrendsSidebar";
-import { bodoni, mincho, mono } from "@/app/fonts";
 import { getJstDateParts } from "@/lib/digestLedger";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +11,7 @@ export default async function Home() {
   const today = getJstDateParts(new Date().toISOString());
 
   return (
-    <main className={`${mincho.variable} ${bodoni.variable} ${mono.variable} ledger-paper min-h-screen text-ink`}>
+    <main className="min-h-screen text-ink">
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
         {/* 題字 */}
         <header className="mb-10 motion-safe:animate-ledger-rise">

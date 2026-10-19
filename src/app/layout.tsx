@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AnalyticsProvider } from "@/components/AnalyticsProvider";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
+import { bodoni, mincho, mono } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -47,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
+    <html lang="ja" className={`${mincho.variable} ${bodoni.variable} ${mono.variable}`}>
       {/* <head>
         <Script
           async
@@ -56,7 +57,7 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
       </head> */}
-      <body className="flex flex-col min-h-screen bg-gray-50">
+      <body className="ledger-paper flex min-h-screen flex-col text-ink">
         <QueryProvider>
           <AnalyticsProvider />
           <Header />

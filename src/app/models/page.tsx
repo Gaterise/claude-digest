@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { permanentRedirect } from "next/navigation";
-import { mono } from "@/app/fonts";
 import { getModelComparison } from "@/generated/api/claudeDigestAPI";
 import { ClaudeModelsPanel } from "@/components/models/ClaudeModelsPanel";
 import { AutoCollectedNotice, ModelPageHero } from "@/components/models/ModelPageHero";
@@ -33,7 +32,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
   const data = resolveModelComparison(response);
 
   return (
-    <main className={`${mono.variable} min-h-screen`}>
+    <main className="min-h-screen">
       <div className="mx-auto max-w-5xl px-4 py-8">
         <nav className="mb-6">
           <Link href="/" className="text-sm text-blue-600 hover:text-blue-800">

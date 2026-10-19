@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { DigestDetail } from "@/components/DigestDetail";
 
 const mockDetail = {
@@ -44,5 +44,38 @@ describe("DigestDetail コンポーネント", () => {
     render(<DigestDetail article={mockDetail} />);
     expect(screen.getByText("新機能")).toBeInTheDocument();
     expect(screen.getByText("改善")).toBeInTheDocument();
+  });
+
+  it("見出し（h1）に記事タイトルを掲げる", () => {
+    render(<DigestDetail article={mockDetail} />);
+    expect(screen.getByRole("heading", { level: 1, name: mockDetail.title })).toBeInTheDocument();
+  });
+
+  it("版番号と日本時間の掲載日を表示する", () => {
+    render(<DigestDetail article={mockDetail} />);
+    expect(screen.getByText("1.9.0")).toBeInTheDocument();
+    expect(screen.getByText("2026年4月10日（金）")).toBeInTheDocument();
+    expect(screen.getByText("09:00")).toBeInTheDocument();
+  });
+
+  it("版番号がない記事は「号外」として扱う", () => {
+    render(<DigestDetail article={{ ...mockDetail, originalVersion: null }} />);
+    expect(screen.getByText("号外")).toBeInTheDocument();
+  });
+
+  it("要点を囲み記事の番号付きリストで並べる", () => {
+    render(<DigestDetail article={mockDetail} />);
+    const box = screen.getByRole("region", { name: "要点" });
+    const items = within(box).getAllByRole("listitem");
+    expect(items).toHaveLength(mockDetail.keyPoints.length);
+    expect(within(box).getByRole("list").tagName).toBe("OL");
+  });
+
+  it("末尾に出典欄を設け、公式変更ログへリンクする", () => {
+    render(<DigestDetail article={mockDetail} />);
+    const source = screen.getByRole("region", { name: "出典" });
+    const link = within(source).getByRole("link", { name: /公式変更ログ/ });
+    expect(link).toHaveAttribute("href", mockDetail.sourceUrl);
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 });

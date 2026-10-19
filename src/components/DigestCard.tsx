@@ -1,21 +1,11 @@
 import Link from "next/link";
-import type { DigestArticleSummary, DigestCategory } from "@/generated/api/claudeDigestAPI";
-import { CATEGORY_LABELS } from "@/types";
+import type { DigestArticleSummary } from "@/generated/api/claudeDigestAPI";
+import { LedgerCategoryMarks } from "./LedgerCategoryMarks";
 import { formatJstTime, getJstDateParts, isNewArticle } from "@/lib/digestLedger";
 
 interface DigestCardProps {
   article: DigestArticleSummary;
 }
-
-/** 台帳の分類印（色付きの角印 + 文字） */
-const CATEGORY_MARK: Record<DigestCategory, string> = {
-  new_feature: "bg-shu",
-  improvement: "bg-ai",
-  bug_fix: "bg-ink-soft",
-  deprecation: "bg-oudo",
-  breaking_change: "bg-enji",
-  other: "bg-ink-faint",
-};
 
 export function DigestCard({ article }: DigestCardProps) {
   const isNew = isNewArticle(article.publishedAt);
@@ -49,21 +39,7 @@ export function DigestCard({ article }: DigestCardProps) {
 
       {/* 本文 */}
       <div className="min-w-0 pr-10 sm:pr-14">
-        {article.categories.length > 0 && (
-          <ul className="mb-1.5 flex flex-wrap gap-x-3 gap-y-1" aria-label="分類">
-            {article.categories.map((category) => (
-              <li
-                key={category}
-                className={`inline-flex items-center gap-1.5 text-[11px] font-medium tracking-widest ${
-                  category === "breaking_change" ? "text-enji" : "text-ink-soft"
-                }`}
-              >
-                <span aria-hidden="true" className={`h-1.5 w-1.5 ${CATEGORY_MARK[category] ?? "bg-ink-faint"}`} />
-                <span>{CATEGORY_LABELS[category] ?? category}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+        <LedgerCategoryMarks categories={article.categories} className="mb-1.5" />
 
         <h3 className="font-mincho text-[1.05rem] font-bold leading-snug text-ink sm:text-lg">
           <Link
