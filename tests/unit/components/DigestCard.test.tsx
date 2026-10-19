@@ -43,4 +43,14 @@ describe("DigestCard コンポーネント", () => {
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute("href", "/digests/test-1");
   });
+
+  it("日本時間の公開時刻を表示する", () => {
+    render(<DigestCard article={mockArticle} />);
+    expect(screen.getByText("09:00")).toBeInTheDocument();
+  });
+
+  it("バージョン番号を表示する", () => {
+    render(<DigestCard article={mockArticle} />);
+    expect(screen.getByText("1.9.0")).toBeInTheDocument();
+  });
 });

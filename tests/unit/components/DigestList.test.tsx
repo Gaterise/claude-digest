@@ -49,4 +49,13 @@ describe("DigestList コンポーネント", () => {
     expect(screen.getByText("テスト記事1")).toBeInTheDocument();
     expect(screen.getByText("テスト記事2")).toBeInTheDocument();
   });
+
+  it("日本時間の日付ごとに見出しを付けて記事をまとめる", () => {
+    renderWithProviders(<DigestList initialArticles={mockArticles} initialNextCursor={null} />);
+    const headings = screen.getAllByRole("heading", { level: 2 });
+    expect(headings.map((h) => h.textContent)).toEqual([
+      expect.stringContaining("2026年4月10日（金）"),
+      expect.stringContaining("2026年4月9日（木）"),
+    ]);
+  });
 });

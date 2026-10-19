@@ -2,6 +2,7 @@
 
 import { useGetTrends } from "@/generated/api/claudeDigestAPI";
 import type { TrendItem } from "@/generated/api/claudeDigestAPI";
+import type { ReactNode } from "react";
 
 function formatGeneratedAt(iso: string): string {
   const parts = new Intl.DateTimeFormat("ja-JP", {
@@ -32,46 +33,45 @@ function ThreadsIcon({ className }: { className?: string }) {
   );
 }
 
+function SearchLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="relative z-10 inline-flex items-center gap-1 text-[11px] text-ink-soft underline decoration-rule decoration-1 underline-offset-[3px] transition-colors hover:text-shu hover:decoration-shu"
+    >
+      {children}
+    </a>
+  );
+}
+
 function TrendCard({ item, rank }: { item: TrendItem; rank: number }) {
   const query = encodeURIComponent(item.keyword);
 
   return (
-    <li className="px-3 py-2.5" data-testid="trend-item">
-      <div className="flex items-start gap-2.5">
-        <span
-          className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded text-[11px] font-bold ${
-            rank <= 3 ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-500"
-          }`}
-        >
-          {rank}
-        </span>
-        <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold leading-snug text-gray-900">
-            {item.title}
-          </h3>
-          <p className="mt-1 text-xs leading-relaxed text-gray-500">
-            {item.summary}
-          </p>
-          <div className="mt-1.5 flex items-center gap-1.5">
-            <a
-              href={`https://x.com/search?q=${query}&f=live`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2 py-0.5 text-[11px] font-medium text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-900"
-            >
-              <XIcon className="h-2.5 w-2.5" />
-              で検索
-            </a>
-            <a
-              href={`https://www.threads.com/search?q=${query}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2 py-0.5 text-[11px] font-medium text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-900"
-            >
-              <ThreadsIcon className="h-3 w-3" />
-              で検索
-            </a>
-          </div>
+    <li className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3 border-b border-dotted border-rule py-4 last:border-b-0" data-testid="trend-item">
+      <span
+        aria-hidden="true"
+        className={`font-numeral text-[1.9rem] italic leading-[0.9] ${rank <= 3 ? "text-shu" : "text-ink-faint"}`}
+      >
+        {rank}
+      </span>
+      <div className="min-w-0">
+        <h3 className="font-mincho text-[15px] font-bold leading-snug text-ink">
+          <span className="sr-only">{rank}位 </span>
+          {item.title}
+        </h3>
+        <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">{item.summary}</p>
+        <div className="mt-2 flex items-center gap-3">
+          <SearchLink href={`https://x.com/search?q=${query}&f=live`}>
+            <XIcon className="h-2.5 w-2.5" />
+            で検索 ↗
+          </SearchLink>
+          <SearchLink href={`https://www.threads.com/search?q=${query}`}>
+            <ThreadsIcon className="h-3 w-3" />
+            で検索 ↗
+          </SearchLink>
         </div>
       </div>
     </li>
@@ -80,14 +80,12 @@ function TrendCard({ item, rank }: { item: TrendItem; rank: number }) {
 
 function TrendSkeleton() {
   return (
-    <li className="px-3 py-2.5">
-      <div className="flex items-start gap-2.5">
-        <span className="mt-0.5 h-5 w-5 flex-shrink-0 animate-pulse rounded bg-gray-200" />
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <div className="h-3.5 w-4/5 animate-pulse rounded bg-gray-200" />
-          <div className="h-3 w-full animate-pulse rounded bg-gray-100" />
-          <div className="h-3 w-3/5 animate-pulse rounded bg-gray-100" />
-        </div>
+    <li className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3 border-b border-dotted border-rule py-4">
+      <span className="h-7 w-5 animate-pulse bg-paper-deep" />
+      <div className="min-w-0 space-y-1.5">
+        <div className="h-4 w-4/5 animate-pulse bg-paper-deep" />
+        <div className="h-3 w-full animate-pulse bg-paper-deep/70" />
+        <div className="h-3 w-3/5 animate-pulse bg-paper-deep/70" />
       </div>
     </li>
   );
@@ -102,38 +100,39 @@ export function TrendsSidebar() {
   return (
     <section
       data-testid="trends-sidebar"
-      className="rounded-lg border border-gray-200 bg-white lg:flex lg:max-h-[calc(100vh-6rem)] lg:flex-col"
+      className="border-t-2 border-ink lg:flex lg:max-h-[calc(100vh-6rem)] lg:flex-col"
       aria-label="AIトレンド"
     >
-      <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-100 px-3 py-2.5">
-        <h2 className="text-sm font-semibold text-gray-800">AIトレンド</h2>
-        <div className="flex items-center gap-1.5 text-gray-400">
-          <XIcon className="h-3 w-3" />
-          <ThreadsIcon className="h-3.5 w-3.5" />
-          <span className="text-[11px]">で話題</span>
+      <div className="flex-shrink-0 border-b border-ink py-3">
+        <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink-faint">AI Trends</p>
+        <div className="mt-1 flex items-end justify-between gap-2">
+          <h2 className="font-mincho text-2xl font-extrabold tracking-[0.06em] text-ink">話題の欄</h2>
+          <span className="flex items-center gap-1 pb-1 text-[10px] text-ink-faint">
+            <XIcon className="h-2.5 w-2.5" />
+            <ThreadsIcon className="h-3 w-3" />
+            で話題の AI
+          </span>
         </div>
       </div>
 
       {isLoading ? (
-        <ul className="divide-y divide-gray-100 lg:min-h-0 lg:overflow-y-auto">
+        <ul className="lg:min-h-0 lg:overflow-y-auto">
           {Array.from({ length: 5 }).map((_, i) => (
             <TrendSkeleton key={i} />
           ))}
         </ul>
       ) : items.length > 0 ? (
-        <ul className="divide-y divide-gray-100 lg:min-h-0 lg:overflow-y-auto">
+        <ol className="lg:min-h-0 lg:overflow-y-auto lg:pr-1">
           {items.map((item, i) => (
             <TrendCard key={`${item.keyword}-${i}`} item={item} rank={i + 1} />
           ))}
-        </ul>
+        </ol>
       ) : (
-        <p className="px-3 py-6 text-center text-xs text-gray-400">
-          トレンド情報を準備中です
-        </p>
+        <p className="py-8 text-center font-mincho text-sm text-ink-faint">トレンド情報を準備中です</p>
       )}
 
-      <div className="flex-shrink-0 border-t border-gray-100 px-3 py-2">
-        <p className="text-[10px] leading-relaxed text-gray-400">
+      <div className="flex-shrink-0 border-t border-ink py-2">
+        <p className="text-[10px] leading-relaxed text-ink-faint">
           Google検索をもとにAIが自動生成
           {data?.generatedAt && ` ・ 更新: ${formatGeneratedAt(data.generatedAt)}`}
         </p>

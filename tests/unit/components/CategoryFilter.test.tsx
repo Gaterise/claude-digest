@@ -25,8 +25,8 @@ describe("CategoryFilter コンポーネント", () => {
 
   it("選択中のカテゴリがハイライトされる", () => {
     render(<CategoryFilter selected="bug_fix" onSelect={() => {}} />);
-    const bugFixButton = screen.getByText("バグ修正");
-    expect(bugFixButton.closest("button")).toHaveClass("bg-blue-600");
+    expect(screen.getByRole("button", { name: /バグ修正/ })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: /すべて/ })).toHaveAttribute("aria-pressed", "false");
   });
 
   it("「すべて」をクリックすると null が渡される", () => {

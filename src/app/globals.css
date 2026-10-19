@@ -15,3 +15,74 @@
     }
   }
 }
+
+/* ── 変更ログ台帳（トップ一覧）── */
+@theme inline {
+  --font-mincho: var(--font-shippori), "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-numeral: var(--font-bodoni), "Didot", "Times New Roman", serif;
+}
+
+@theme {
+  --color-paper: #f3ede2;
+  --color-paper-deep: #e9e0cf;
+  --color-ink: #1f1b16;
+  --color-ink-soft: #5c5348;
+  --color-ink-faint: #8f8576;
+  --color-rule: #cdbfa8;
+  --color-shu: #c23a22;
+  --color-ai: #2c4a6e;
+  --color-oudo: #a57b1c;
+  --color-enji: #7f1d2d;
+
+  --animate-ledger-rise: ledger-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-stamp: stamp 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+
+  @keyframes ledger-rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes stamp {
+    from {
+      opacity: 0;
+      transform: scale(1.6) rotate(-14deg);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) rotate(-8deg);
+    }
+  }
+}
+
+/* 紙の質感（細かなノイズ）と、版面の縦罫 */
+.ledger-paper {
+  background-color: var(--color-paper);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.28 0 0 0 0 0.18 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at top, rgb(255 255 255 / 0.55), transparent 60%);
+}
+
+/* 見出しのホバー時に朱の下線を引く */
+.ledger-underline {
+  background-image: linear-gradient(var(--color-shu), var(--color-shu));
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size 0.35s ease;
+}
+.group:hover .ledger-underline,
+.group:focus-visible .ledger-underline {
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ledger-underline {
+    transition: none;
+  }
+}
