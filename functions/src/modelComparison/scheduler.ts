@@ -14,7 +14,7 @@ export const scheduledModelComparison = onSchedule(
     schedule: "0 6 * * *",
     timeZone: "Asia/Tokyo",
     region: "asia-northeast1",
-    timeoutSeconds: 540,
+    timeoutSeconds: 900,
     memory: "512MiB",
   },
   async () => {

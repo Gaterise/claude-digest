@@ -72,6 +72,16 @@
 - [x] T034 ヘッダー3点メニュー・フッター・サイトマップに2ページを反映
 - [x] T035 全テスト・typecheck・build・E2E を実行
 
+## Phase 9: 本番不具合修正（2026-10-19）ベンチマーク生成が 0 件になる
+
+原因: 検索グラウンディング付き Gemini は出典を `vertexaisearch.cloud.google.com/grounding-api-redirect/...`（中継 URL）でしか返さず、パーサーが出典なしとして全スコアを破棄していた。長い中継 URL の転記で JSON が崩れることもあった。
+
+- [x] T036 テスト先行: `tests/unit/modelComparison/sourceResolver.test.ts`、`parser.test.ts`（JSON 修復・エラー周辺の原文）→ Red 確認 → 承認
+- [x] T037 `functions/src/modelComparison/sourceResolver.ts`: 中継 URL を HEAD（redirect: manual）で解決し実 URL に置換
+- [x] T038 `extractJson` に jsonrepair によるフォールバックとエラー周辺の原文出力
+- [x] T039 generator で応答テキストの出典 URL を解決してからパース、scheduler の timeoutSeconds を 900 に
+- [x] T040 実際の Gemini 応答で検証（ベンチマーク 0 件 → 5 件、URL 解決 33/39 件）
+
 ## Dependencies
 
 - T001–T003 → Phase 2 → 承認 → Phase 3（T013→T014→T015〜T018）

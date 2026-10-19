@@ -2,6 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { logger } from "firebase-functions";
 import type { Benchmark, ClaudeModel, TrendingModel } from "../types";
 import { parseBenchmarks, parseClaudeModels, parseTrendingModels } from "./parser";
+import { fetchRedirectLocation, resolveGroundingRedirects } from "./sourceResolver";
 import type { ModelComparisonGenerators } from "./updater";
 
 const MODEL = "gemini-2.5-flash";
@@ -103,9 +104,15 @@ async function generateWithRetry<T>(
           maxOutputTokens: 16384,
         },
       });
-      const text = response.text;
-      if (!text) {
+      const raw = response.text;
+      if (!raw) {
         throw new Error("Gemini から応答テキストが返りませんでした");
+      }
+      const { text, resolved, failed } = await resolveGroundingRedirects(raw, (url) =>
+        fetchRedirectLocation(url)
+      );
+      if (resolved + failed > 0) {
+        logger.info(`${label}: 出典 URL を解決 ${resolved} 件 / 失敗 ${failed} 件`);
       }
       return parse(text);
     } catch (error) {

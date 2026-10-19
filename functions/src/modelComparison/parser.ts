@@ -1,3 +1,4 @@
+import { jsonrepair } from "jsonrepair";
 import type { Benchmark, BenchmarkScore, ClaudeModel, TrendingModel } from "../types";
 
 const LIMITS = {
@@ -30,12 +31,25 @@ export function extractJson(text: string): unknown {
     throw new Error(`応答から JSON を抽出できませんでした: ${text.slice(0, 200)}`);
   }
 
+  const candidate = stripped.slice(start, end + 1);
   try {
-    return JSON.parse(stripped.slice(start, end + 1));
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    throw new Error(`JSON のパースに失敗しました: ${msg}`);
+    return JSON.parse(candidate);
+  } catch (parseError) {
+    // LLM が長い URL の転記などで JSON を崩すことがあるため、修復を試みる
+    try {
+      return JSON.parse(jsonrepair(candidate));
+    } catch {
+      const msg = parseError instanceof Error ? parseError.message : String(parseError);
+      throw new Error(`JSON のパースに失敗しました: ${msg}（周辺: ${errorContext(candidate, msg)}）`);
+    }
   }
+}
+
+/** JSON.parse のエラーメッセージの位置周辺の原文を返す（ログ調査用） */
+function errorContext(text: string, message: string): string {
+  const position = Number(/position (\d+)/.exec(message)?.[1] ?? 0);
+  const from = Math.max(0, position - 80);
+  return text.slice(from, position + 80).replace(/\s+/g, " ");
 }
 
 /** 出典として使える http/https URL か */

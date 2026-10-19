@@ -64,6 +64,20 @@ describe("extractJson", () => {
   it("壊れた JSON は例外を投げる", () => {
     expect(() => extractJson('{"a": 1,,}')).toThrow();
   });
+
+  it("カンマ抜けなど軽微な崩れは修復してパースする", () => {
+    expect(extractJson('{"a": 1 "b": 2}')).toEqual({ a: 1, b: 2 });
+  });
+
+  it("URL 文字列内に紛れ込んだ引用符を修復してパースする", () => {
+    expect(extractJson('[{"u": "https://x.example/a"b", "c": 1}]')).toEqual([
+      { u: 'https://x.example/a"b', c: 1 },
+    ]);
+  });
+
+  it("修復できない場合はエラー位置周辺の原文をメッセージに含める", () => {
+    expect(() => extractJson('{"name": "MMLU", "a": 1,,}')).toThrow(/"a": 1,,/);
+  });
 });
 
 describe("isValidSourceUrl", () => {
