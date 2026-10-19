@@ -23,12 +23,3 @@ export const CATEGORY_LABELS: Record<string, string> = {
   other: "その他",
 };
 
-/** カテゴリの色マッピング (Tailwind クラス) */
-export const CATEGORY_COLORS: Record<string, string> = {
-  new_feature: "bg-green-100 text-green-800",
-  improvement: "bg-blue-100 text-blue-800",
-  bug_fix: "bg-red-100 text-red-800",
-  deprecation: "bg-yellow-100 text-yellow-800",
-  breaking_change: "bg-orange-100 text-orange-800",
-  other: "bg-gray-100 text-gray-800",
-};

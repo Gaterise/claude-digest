@@ -1,3 +1,4 @@
+import { CATEGORY_TONE } from "@/lib/categoryTone";
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { DigestCard } from "@/components/DigestCard";
@@ -52,5 +53,21 @@ describe("DigestCard コンポーネント", () => {
   it("バージョン番号を表示する", () => {
     render(<DigestCard article={mockArticle} />);
     expect(screen.getByText("1.9.0")).toBeInTheDocument();
+  });
+
+  it("分類を色付きの札で表示する", () => {
+    render(<DigestCard article={mockArticle} />);
+    expect(screen.getByText("新機能").closest("li")).toHaveClass(...CATEGORY_TONE.new_feature.tag.split(" "));
+    expect(screen.getByText("改善").closest("li")).toHaveClass(...CATEGORY_TONE.improvement.tag.split(" "));
+  });
+
+  it("バージョンと時刻を1行目にまとめ、その後に分類を並べる（重ならない縦並び）", () => {
+    render(<DigestCard article={{ ...mockArticle, originalVersion: "2.1.303" }} />);
+    const meta = screen.getByTestId("digest-meta");
+    expect(meta).toHaveTextContent("2.1.303");
+    expect(meta).toHaveTextContent("09:00");
+    const categories = screen.getByRole("list", { name: "分類" });
+    expect(meta.compareDocumentPosition(categories) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(meta.contains(categories)).toBe(false);
   });
 });

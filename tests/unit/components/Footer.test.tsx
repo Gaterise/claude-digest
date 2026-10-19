@@ -44,4 +44,9 @@ describe("Footer コンポーネント", () => {
     render(<Footer />);
     expect(screen.getByText(new RegExp(`© ${new Date().getFullYear()} Claude Digest`))).toBeInTheDocument();
   });
+
+  it("意味の伝わりにくい「了」の飾りを表示しない", () => {
+    render(<Footer />);
+    expect(screen.queryByText(/了/)).not.toBeInTheDocument();
+  });
 });

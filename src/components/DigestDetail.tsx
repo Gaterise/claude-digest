@@ -107,12 +107,8 @@ export function DigestDetail({ article }: DigestDetailProps) {
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.summary}</ReactMarkdown>
       </div>
 
-      <p aria-hidden="true" className="mt-10 text-right font-mincho text-sm tracking-[0.3em] text-ink-faint">
-        （了）
-      </p>
-
       {/* 出典 */}
-      <section aria-labelledby="digest-source" className="mt-6 border-t-2 border-ink pt-4">
+      <section aria-labelledby="digest-source" className="mt-12 border-t-2 border-ink pt-4">
         <div className="grid gap-3 sm:grid-cols-[6rem_minmax(0,1fr)] sm:gap-6">
           <h2 id="digest-source" className="font-mincho text-sm font-bold tracking-[0.4em] text-ink">
             出典

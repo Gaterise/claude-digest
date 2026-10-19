@@ -2,6 +2,7 @@
 
 import type { DigestCategory } from "@/generated/api/claudeDigestAPI";
 import { CATEGORY_LABELS } from "@/types";
+import { CATEGORY_TONE, type CategoryTone } from "@/lib/categoryTone";
 
 interface CategoryFilterProps {
   selected: DigestCategory | null;
@@ -20,10 +21,12 @@ const FILTER_CATEGORIES: DigestCategory[] = [
 function FilterButton({
   label,
   active,
+  tone,
   onClick,
 }: {
   label: string;
   active: boolean;
+  tone: CategoryTone;
   onClick: () => void;
 }) {
   return (
@@ -31,38 +34,35 @@ function FilterButton({
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`relative flex-shrink-0 px-1 py-1 font-mincho text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-shu sm:text-[15px] ${
-        active ? "font-bold text-ink" : "text-ink-faint hover:text-ink"
+      className={`flex-shrink-0 border-l-[3px] px-3 py-1.5 text-[13px] font-bold tracking-wider transition-[background-color,color,box-shadow] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-shu sm:text-sm ${
+        active ? `${tone.solid} shadow-[2px_2px_0_0_var(--color-ink)]` : `${tone.tag} hover:brightness-95`
       }`}
     >
       {label}
-      <span
-        aria-hidden="true"
-        className={`absolute inset-x-1 -bottom-px h-[3px] bg-shu transition-transform duration-300 origin-left ${
-          active ? "scale-x-100" : "scale-x-0"
-        }`}
-      />
     </button>
   );
 }
 
+const ALL_TONE: CategoryTone = {
+  tag: "border-ink bg-paper-deep text-ink",
+  solid: "border-ink bg-ink text-paper",
+};
+
 export function CategoryFilter({ selected, onSelect }: CategoryFilterProps) {
   return (
-    <div className="flex items-center gap-3 border-b border-rule pb-1">
-      <span className="flex shrink-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-faint">
-        <span aria-hidden="true" className="h-1.5 w-1.5 bg-shu" />
-        分類
-      </span>
+    <div className="flex items-start gap-3 border-b border-rule pb-3">
+      <span className="shrink-0 pt-2 font-mincho text-xs font-bold tracking-[0.2em] text-ink-soft">分類</span>
       <div
         data-testid="category-filter"
-        className="scrollbar-none flex gap-3 overflow-x-auto sm:flex-wrap sm:gap-x-4"
+        className="flex flex-wrap gap-2 pr-1"
       >
-        <FilterButton label="すべて" active={selected === null} onClick={() => onSelect(null)} />
+        <FilterButton label="すべて" active={selected === null} tone={ALL_TONE} onClick={() => onSelect(null)} />
         {FILTER_CATEGORIES.map((cat) => (
           <FilterButton
             key={cat}
             label={CATEGORY_LABELS[cat] ?? cat}
             active={selected === cat}
+            tone={CATEGORY_TONE[cat]}
             onClick={() => onSelect(cat)}
           />
         ))}

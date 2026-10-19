@@ -1,15 +1,6 @@
 import type { DigestCategory } from "@/generated/api/claudeDigestAPI";
 import { CATEGORY_LABELS } from "@/types";
-
-/** 台帳の分類印（色付きの角印 + 文字） */
-const CATEGORY_MARK: Record<DigestCategory, string> = {
-  new_feature: "bg-shu",
-  improvement: "bg-ai",
-  bug_fix: "bg-ink-soft",
-  deprecation: "bg-oudo",
-  breaking_change: "bg-enji",
-  other: "bg-ink-faint",
-};
+import { CATEGORY_TONE } from "@/lib/categoryTone";
 
 interface LedgerCategoryMarksProps {
   categories: DigestCategory[];
@@ -17,22 +8,19 @@ interface LedgerCategoryMarksProps {
   size?: "sm" | "md";
 }
 
+/** 分類の札（薄い色の背景 + 左の色線 + 文字） */
 export function LedgerCategoryMarks({ categories, className = "", size = "sm" }: LedgerCategoryMarksProps) {
   if (categories.length === 0) return null;
-  const text = size === "md" ? "text-xs" : "text-[11px]";
-  const mark = size === "md" ? "h-2 w-2" : "h-1.5 w-1.5";
+  const sizeClass = size === "md" ? "px-2.5 py-1 text-[13px]" : "px-2 py-0.5 text-xs";
 
   return (
-    <ul className={`flex flex-wrap gap-x-3 gap-y-1 ${className}`} aria-label="分類">
+    <ul className={`flex flex-wrap gap-1.5 ${className}`} aria-label="分類">
       {categories.map((category) => (
         <li
           key={category}
-          className={`inline-flex items-center gap-1.5 font-medium tracking-widest ${text} ${
-            category === "breaking_change" ? "text-enji" : "text-ink-soft"
-          }`}
+          className={`border-l-[3px] font-bold tracking-wider ${sizeClass} ${CATEGORY_TONE[category]?.tag ?? CATEGORY_TONE.other.tag}`}
         >
-          <span aria-hidden="true" className={`${mark} ${CATEGORY_MARK[category] ?? "bg-ink-faint"}`} />
-          <span>{CATEGORY_LABELS[category] ?? category}</span>
+          {CATEGORY_LABELS[category] ?? category}
         </li>
       ))}
     </ul>

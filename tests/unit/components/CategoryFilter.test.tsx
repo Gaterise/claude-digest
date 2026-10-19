@@ -1,3 +1,4 @@
+import { CATEGORY_TONE } from "@/lib/categoryTone";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { CategoryFilter } from "@/components/CategoryFilter";
@@ -34,5 +35,17 @@ describe("CategoryFilter コンポーネント", () => {
     render(<CategoryFilter selected="new_feature" onSelect={onSelect} />);
     fireEvent.click(screen.getByText("すべて"));
     expect(onSelect).toHaveBeenCalledWith(null);
+  });
+
+  it("選択中の分類は、その分類の色で塗りつぶす", () => {
+    render(<CategoryFilter selected="bug_fix" onSelect={() => {}} />);
+    const solid = CATEGORY_TONE.bug_fix.solid.split(" ");
+    expect(screen.getByRole("button", { name: /バグ修正/ })).toHaveClass(...solid);
+    expect(screen.getByRole("button", { name: /新機能/ })).not.toHaveClass(...CATEGORY_TONE.new_feature.solid.split(" "));
+  });
+
+  it("未選択の分類も色付きの札として表示する", () => {
+    render(<CategoryFilter selected={null} onSelect={() => {}} />);
+    expect(screen.getByRole("button", { name: /新機能/ })).toHaveClass(...CATEGORY_TONE.new_feature.tag.split(" "));
   });
 });

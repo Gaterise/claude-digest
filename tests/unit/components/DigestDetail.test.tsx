@@ -78,4 +78,9 @@ describe("DigestDetail コンポーネント", () => {
     expect(link).toHaveAttribute("href", mockDetail.sourceUrl);
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
+
+  it("意味の伝わりにくい「（了）」の飾りを表示しない", () => {
+    render(<DigestDetail article={mockDetail} />);
+    expect(screen.queryByText(/了/)).not.toBeInTheDocument();
+  });
 });

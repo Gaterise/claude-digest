@@ -94,12 +94,9 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-2 border-t border-ink pt-4 sm:flex-row">
+        <div className="mt-10 border-t border-ink pt-4 text-center sm:text-left">
           <p className="font-mono text-[11px] tracking-wider text-ink-faint">
             © {new Date().getFullYear()} Claude Digest. All rights reserved.
-          </p>
-          <p aria-hidden="true" className="font-mincho text-xs tracking-[0.5em] text-ink-faint">
-            ― 了 ―
           </p>
         </div>
       </div>

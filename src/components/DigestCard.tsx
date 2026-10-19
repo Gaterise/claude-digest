@@ -14,34 +14,32 @@ export function DigestCard({ article }: DigestCardProps) {
   return (
     <article
       data-testid="digest-card"
-      className="group relative grid grid-cols-[4.75rem_minmax(0,1fr)] gap-x-4 border-b border-rule/80 py-5 transition-colors last:border-b-0 hover:bg-paper-deep/40 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-x-6 sm:px-3"
+      className="group relative border-b border-rule/80 py-5 transition-colors last:border-b-0 hover:bg-paper-deep/40 sm:px-3"
     >
-      {/* 版数と時刻 */}
-      <div className="pt-0.5">
-        {article.originalVersion ? (
-          <p className="font-numeral leading-none text-ink">
-            <span className="mr-0.5 align-top text-[11px] italic text-ink-faint">v</span>
-            <span className="text-[1.35rem] font-semibold tracking-tight tabular-nums sm:text-[1.7rem]">
-              {article.originalVersion}
+      <div className="min-w-0 pr-12 sm:pr-16">
+        {/* 1行目: 版数と時刻 */}
+        <p data-testid="digest-meta" className="flex items-baseline gap-2.5 whitespace-nowrap leading-none">
+          {article.originalVersion ? (
+            <span className="font-numeral text-ink">
+              <span className="mr-0.5 text-xs italic text-ink-faint">v</span>
+              <span className="text-xl font-semibold tracking-tight tabular-nums sm:text-[1.4rem]">
+                {article.originalVersion}
+              </span>
             </span>
-          </p>
-        ) : (
-          <p className="font-mincho text-lg font-bold leading-none text-ink">号外</p>
-        )}
-        <time
-          dateTime={article.publishedAt}
-          className="mt-2 block font-mono text-[11px] tracking-wider text-ink-faint"
-        >
-          <span className="sr-only">{date.label} </span>
-          {formatJstTime(article.publishedAt)}
-        </time>
-      </div>
+          ) : (
+            <span className="font-mincho text-base font-bold text-ink">号外</span>
+          )}
+          <span aria-hidden="true" className="text-ink-faint">·</span>
+          <time dateTime={article.publishedAt} className="font-mono text-xs tracking-wider text-ink-faint">
+            <span className="sr-only">{date.label} </span>
+            {formatJstTime(article.publishedAt)}
+          </time>
+        </p>
 
-      {/* 本文 */}
-      <div className="min-w-0 pr-10 sm:pr-14">
-        <LedgerCategoryMarks categories={article.categories} className="mb-1.5" />
+        {/* 2行目: 分類 */}
+        <LedgerCategoryMarks categories={article.categories} className="mt-2.5" />
 
-        <h3 className="font-mincho text-[1.05rem] font-bold leading-snug text-ink sm:text-lg">
+        <h3 className="mt-2 font-mincho text-[1.05rem] font-bold leading-snug text-ink sm:text-lg">
           <Link
             href={`/digests/${article.id}`}
             prefetch={false}
