@@ -19,3 +19,6 @@ export { scheduledScrape } from "./scraper/scheduler";
 
 // Scheduled AI Trends Function
 export { scheduledTrends } from "./summarizer/trendScheduler";
+
+// Scheduled AI Model Comparison Function
+export { scheduledModelComparison } from "./modelComparison/scheduler";

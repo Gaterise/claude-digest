@@ -17,9 +17,10 @@ import type {
   HealthResponse,
   ScrapeStatusResponse,
   TrendsResponse,
+  ModelComparisonResponse,
 } from "./model";
 
-export type { DigestCategory, DigestArticleSummary, DigestArticleDetail, ListDigestsResponse, ListDigestsParams, HealthResponse, ScrapeStatusResponse, TrendItem, TrendsResponse, ErrorResponse } from "./model";
+export type { DigestCategory, DigestArticleSummary, DigestArticleDetail, ListDigestsResponse, ListDigestsParams, HealthResponse, ScrapeStatusResponse, TrendItem, TrendsResponse, ClaudeModel, Benchmark, BenchmarkScore, TrendingModel, ModelComparisonResponse, ErrorResponse } from "./model";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5001/claude-digest/asia-northeast1/api/v1";
@@ -74,6 +75,16 @@ export const getTrends = async (
   config?: AxiosRequestConfig
 ): Promise<TrendsResponse> => {
   const { data } = await apiClient.get<TrendsResponse>("/trends", config);
+  return data;
+};
+
+export const getModelComparison = async (
+  config?: AxiosRequestConfig
+): Promise<ModelComparisonResponse> => {
+  const { data } = await apiClient.get<ModelComparisonResponse>(
+    "/model-comparison",
+    config
+  );
   return data;
 };
 

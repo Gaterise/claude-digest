@@ -1,0 +1,95 @@
+# openapi.yaml への追加分（/model-comparison と関連スキーマ）
+paths:
+  /model-comparison:
+    get:
+      operationId: getModelComparison
+      summary: AI モデル比較データを取得する
+      description: |
+        Google検索グラウンディング付き Gemini が毎日 JST 06:00 に更新する
+        Claude モデル・ベンチマーク・話題の AI モデルの最新データを返す。
+        未生成の区分は空配列・updatedAt null を返す（フロント側で初期データにフォールバック）。
+      tags:
+        - models
+      responses:
+        "200":
+          description: AI モデル比較データ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModelComparisonResponse"
+        "500":
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    ModelComparisonResponse:
+      type: object
+      required: [claudeModels, claudeNote, benchmarks, trendingModels, updatedAt]
+      properties:
+        claudeModels:
+          type: array
+          items: { $ref: "#/components/schemas/ClaudeModel" }
+        claudeNote:
+          type: string
+          nullable: true
+        benchmarks:
+          type: array
+          items: { $ref: "#/components/schemas/Benchmark" }
+        trendingModels:
+          type: array
+          items: { $ref: "#/components/schemas/TrendingModel" }
+        updatedAt:
+          type: object
+          required: [claudeModels, benchmarks, trendingModels]
+          properties:
+            claudeModels: { type: string, format: date-time, nullable: true }
+            benchmarks: { type: string, format: date-time, nullable: true }
+            trendingModels: { type: string, format: date-time, nullable: true }
+    ClaudeModel:
+      type: object
+      required: [family, name, modelId, tagline, context, maxOutput, priceInput, priceOutput, description, strengths, guideTitle, guideText]
+      properties:
+        family: { type: string }
+        name: { type: string }
+        modelId: { type: string }
+        tagline: { type: string }
+        context: { type: string }
+        maxOutput: { type: string }
+        priceInput: { type: string }
+        priceOutput: { type: string }
+        description: { type: string }
+        strengths: { type: array, items: { type: string } }
+        guideTitle: { type: string }
+        guideText: { type: string }
+    Benchmark:
+      type: object
+      required: [name, description, unit, higherIsBetter, scores]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        unit: { type: string }
+        higherIsBetter: { type: boolean }
+        scores:
+          type: array
+          items: { $ref: "#/components/schemas/BenchmarkScore" }
+    BenchmarkScore:
+      type: object
+      required: [model, score, sourceUrl]
+      properties:
+        model: { type: string }
+        score: { type: number }
+        sourceUrl: { type: string, format: uri }
+    TrendingModel:
+      type: object
+      required: [name, provider, releaseDate, summary, highlights, url]
+      properties:
+        name: { type: string }
+        provider: { type: string }
+        releaseDate: { type: string }
+        summary: { type: string }
+        highlights: { type: array, items: { type: string } }
+        url: { type: string, format: uri, nullable: true }

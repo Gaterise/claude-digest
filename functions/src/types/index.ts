@@ -54,3 +54,60 @@ export interface AiTrends {
   items: TrendItem[];
   generatedAt: Timestamp;
 }
+
+/** Claude 現行モデル（モデル比較ページ用） */
+export interface ClaudeModel {
+  family: string;
+  name: string;
+  modelId: string;
+  /** 位置づけ（例: "高性能"） */
+  tagline: string;
+  context: string;
+  maxOutput: string;
+  /** 100万トークンあたりの入力価格（例: "$5.00"） */
+  priceInput: string;
+  priceOutput: string;
+  description: string;
+  strengths: string[];
+  /** 使い分けガイドの見出し（例: "迷ったら Sonnet。"） */
+  guideTitle: string;
+  guideText: string;
+}
+
+export interface BenchmarkScore {
+  model: string;
+  score: number;
+  /** 出典 URL（http/https 必須） */
+  sourceUrl: string;
+}
+
+export interface Benchmark {
+  name: string;
+  description: string;
+  /** "%"、"Elo" など。単位なしは空文字 */
+  unit: string;
+  higherIsBetter: boolean;
+  scores: BenchmarkScore[];
+}
+
+/** Claude 以外で話題の AI モデル */
+export interface TrendingModel {
+  name: string;
+  provider: string;
+  releaseDate: string;
+  summary: string;
+  highlights: string[];
+  /** 公式情報 URL（不正な場合は null） */
+  url: string | null;
+}
+
+/** モデル比較ページの最新スナップショット（区分ごとに最終更新日時を持つ） */
+export interface ModelComparisonData {
+  claudeModels: ClaudeModel[];
+  claudeNote: string | null;
+  claudeModelsUpdatedAt: Date | null;
+  benchmarks: Benchmark[];
+  benchmarksUpdatedAt: Date | null;
+  trendingModels: TrendingModel[];
+  trendingModelsUpdatedAt: Date | null;
+}
