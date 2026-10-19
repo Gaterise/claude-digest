@@ -11,7 +11,8 @@ const NAV_ITEMS = [
     href: "https://github.com/anthropics/claude-code/releases",
     external: true,
   },
-  { label: "claudeモデル比較", href: "/models", external: false },
+  { label: "Claude モデル比較", href: "/models", external: false },
+  { label: "話題の AI 比較", href: "/ai-models", external: false },
   { label: "このサイトについて", href: "/about", external: false },
 ];
 

@@ -62,6 +62,16 @@
 - [x] T027 全ユニット/統合テスト、`npm run typecheck`、`npm run lint`、`npm run build`、`npm --prefix functions run build` を実行
 - [x] T028 quickstart.md に沿った手動確認（dev サーバーで 3 タブ・モバイル幅）
 
+## Phase 8: ページ分割（2026-10-19 変更）
+
+- [x] T029 テスト先行: `tests/unit/lib/modelComparison.test.ts`（AI_MODEL_TABS・既定 trending・ページ別更新日時）、`tests/unit/components/ModelComparisonTabs.test.tsx`（2タブ）、`tests/e2e/models.spec.ts`（2ページ・旧 URL リダイレクト・3点メニュー）を更新し Red を確認 → 承認
+- [x] T030 `src/lib/modelComparison.ts`: AI_MODEL_TABS / DEFAULT_TAB=trending、claudeUpdatedAt / aiModelsUpdatedAt
+- [x] T031 `ModelPageHero`（ヒーロー・件数ストリップ・注意書き）を共通化、`src/app/fonts.ts` に等幅フォント
+- [x] T032 `/models` を Claude モデル専用に、旧 `?tab=` を `/ai-models` へ恒久リダイレクト
+- [x] T033 `/ai-models`「話題の AI 比較」ページを新設（話題の AI モデル〔既定〕/ ベンチマーク比較）
+- [x] T034 ヘッダー3点メニュー・フッター・サイトマップに2ページを反映
+- [x] T035 全テスト・typecheck・build・E2E を実行
+
 ## Dependencies
 
 - T001–T003 → Phase 2 → 承認 → Phase 3（T013→T014→T015〜T018）

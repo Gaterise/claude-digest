@@ -2,7 +2,7 @@
 
 import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { motion } from "framer-motion";
-import { MODEL_TABS, buildTabSearch, type ModelTabId } from "@/lib/modelComparison";
+import { AI_MODEL_TABS, buildTabSearch, type ModelTabId } from "@/lib/modelComparison";
 
 interface ModelComparisonTabsProps {
   initialTab: ModelTabId;
@@ -28,7 +28,7 @@ export function ModelComparisonTabs({ initialTab, panels, counts }: ModelCompari
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    const last = MODEL_TABS.length - 1;
+    const last = AI_MODEL_TABS.length - 1;
     const next: Record<string, number> = {
       ArrowRight: index === last ? 0 : index + 1,
       ArrowLeft: index === 0 ? last : index - 1,
@@ -37,7 +37,7 @@ export function ModelComparisonTabs({ initialTab, panels, counts }: ModelCompari
     };
     if (!(event.key in next)) return;
     event.preventDefault();
-    select(MODEL_TABS[next[event.key]].id, true);
+    select(AI_MODEL_TABS[next[event.key]].id, true);
   };
 
   return (
@@ -45,9 +45,9 @@ export function ModelComparisonTabs({ initialTab, panels, counts }: ModelCompari
       <div
         role="tablist"
         aria-label="表示する情報"
-        className="grid grid-cols-3 gap-1 rounded-xl border border-gray-200 bg-white p-1 shadow-sm"
+        className="grid grid-cols-2 gap-1 rounded-xl border border-gray-200 bg-white p-1 shadow-sm"
       >
-        {MODEL_TABS.map((tab, index) => {
+        {AI_MODEL_TABS.map((tab, index) => {
           const selected = tab.id === active;
           const count = counts?.[tab.id];
           return (
@@ -64,7 +64,7 @@ export function ModelComparisonTabs({ initialTab, panels, counts }: ModelCompari
               tabIndex={selected ? 0 : -1}
               onClick={() => select(tab.id)}
               onKeyDown={(e) => onKeyDown(e, index)}
-              className={`relative flex min-h-11 items-center justify-center gap-1.5 rounded-lg px-1 py-2 text-[11px] font-semibold tracking-tight transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-2 sm:text-sm sm:tracking-normal ${
+              className={`relative flex min-h-11 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:text-sm ${
                 selected ? "text-white" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
@@ -91,7 +91,7 @@ export function ModelComparisonTabs({ initialTab, panels, counts }: ModelCompari
         })}
       </div>
 
-      {MODEL_TABS.map((tab) => {
+      {AI_MODEL_TABS.map((tab) => {
         const selected = tab.id === active;
         return (
           <div

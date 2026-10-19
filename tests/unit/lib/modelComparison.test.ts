@@ -3,6 +3,8 @@ import {
   SEED_CLAUDE_MODELS,
   SEED_CLAUDE_NOTE,
   resolveModelComparison,
+  AI_MODEL_TABS,
+  DEFAULT_TAB,
   parseTab,
   buildTabSearch,
   isSafeHttpUrl,
@@ -60,7 +62,8 @@ describe("resolveModelComparison", () => {
     expect(r.isClaudeSeed).toBe(true);
     expect(r.benchmarks).toEqual([]);
     expect(r.trendingModels).toEqual([]);
-    expect(r.lastUpdatedAt).toBeNull();
+    expect(r.claudeUpdatedAt).toBeNull();
+    expect(r.aiModelsUpdatedAt).toBeNull();
   });
 
   it("Claude 区分が空なら初期データにフォールバックする", () => {
@@ -69,7 +72,7 @@ describe("resolveModelComparison", () => {
     expect(r.isClaudeSeed).toBe(true);
   });
 
-  it("API データがあればそれを使い、最新の更新日時を lastUpdatedAt とする", () => {
+  it("API データがあればそれを使い、ページごとの更新日時を返す", () => {
     const r = resolveModelComparison({
       ...emptyResponse,
       claudeModels: [claude("Claude Opus 5")],
@@ -83,33 +86,54 @@ describe("resolveModelComparison", () => {
     expect(r.claudeModels.map((m) => m.name)).toEqual(["Claude Opus 5"]);
     expect(r.claudeNote).toBeNull();
     expect(r.isClaudeSeed).toBe(false);
-    expect(r.lastUpdatedAt).toBe("2026-10-16T21:00:00.000Z");
+    expect(r.claudeUpdatedAt).toBe("2026-10-15T21:00:00.000Z");
+    // 話題の AI 比較ページはベンチマーク・話題モデルのうち新しい方
+    expect(r.aiModelsUpdatedAt).toBe("2026-10-16T21:00:00.000Z");
+  });
+
+  it("話題の AI 比較ページの更新日時は2区分のうち最新のもの", () => {
+    const r = resolveModelComparison({
+      ...emptyResponse,
+      updatedAt: {
+        claudeModels: "2026-10-18T21:00:00.000Z",
+        benchmarks: "2026-10-16T21:00:00.000Z",
+        trendingModels: "2026-10-17T21:00:00.000Z",
+      },
+    });
+    expect(r.aiModelsUpdatedAt).toBe("2026-10-17T21:00:00.000Z");
+  });
+});
+
+describe("AI_MODEL_TABS", () => {
+  it("話題の AI モデル → ベンチマーク比較 の2タブ", () => {
+    expect(AI_MODEL_TABS.map((t) => t.id)).toEqual(["trending", "benchmarks"]);
+    expect(DEFAULT_TAB).toBe("trending");
   });
 });
 
 describe("parseTab", () => {
   it("有効なタブ ID を返す", () => {
-    expect(parseTab("claude")).toBe("claude");
     expect(parseTab("benchmarks")).toBe("benchmarks");
     expect(parseTab("trending")).toBe("trending");
   });
 
-  it("未指定・不正値・配列は既定の claude", () => {
-    expect(parseTab(undefined)).toBe("claude");
-    expect(parseTab("unknown")).toBe("claude");
+  it("未指定・不正値・配列は既定の trending", () => {
+    expect(parseTab(undefined)).toBe("trending");
+    expect(parseTab("unknown")).toBe("trending");
+    expect(parseTab("claude")).toBe("trending");
     expect(parseTab(["benchmarks", "trending"])).toBe("benchmarks");
-    expect(parseTab([])).toBe("claude");
+    expect(parseTab([])).toBe("trending");
   });
 });
 
 describe("buildTabSearch", () => {
   it("既定タブでは tab パラメータを削除する", () => {
-    expect(buildTabSearch("?tab=benchmarks", "claude")).toBe("");
+    expect(buildTabSearch("?tab=benchmarks", "trending")).toBe("");
   });
 
   it("他のパラメータを保持しつつ tab を設定する", () => {
-    expect(buildTabSearch("?utm=x", "trending")).toBe("?utm=x&tab=trending");
-    expect(buildTabSearch("?tab=claude&utm=x", "benchmarks")).toBe("?tab=benchmarks&utm=x");
+    expect(buildTabSearch("?utm=x", "benchmarks")).toBe("?utm=x&tab=benchmarks");
+    expect(buildTabSearch("?tab=trending&utm=x", "benchmarks")).toBe("?tab=benchmarks&utm=x");
   });
 });
 

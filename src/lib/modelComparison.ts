@@ -102,8 +102,16 @@ export interface ResolvedModelComparison {
   isClaudeSeed: boolean;
   benchmarks: Benchmark[];
   trendingModels: TrendingModel[];
-  /** 区分ごとの更新日時のうち最新のもの（ISO 8601） */
-  lastUpdatedAt: string | null;
+  /** Claude モデル比較ページの更新日時（ISO 8601） */
+  claudeUpdatedAt: string | null;
+  /** 話題の AI 比較ページの更新日時（ベンチマーク・話題モデルのうち新しい方） */
+  aiModelsUpdatedAt: string | null;
+}
+
+function latest(...timestamps: (string | null | undefined)[]): string | null {
+  const valid = timestamps.filter((t): t is string => typeof t === "string");
+  if (valid.length === 0) return null;
+  return valid.reduce((a, b) => (new Date(a).getTime() >= new Date(b).getTime() ? a : b));
 }
 
 /** API レスポンスを区分ごとに初期データへフォールバックしつつ表示用に解決する */
@@ -111,15 +119,6 @@ export function resolveModelComparison(
   res: ModelComparisonResponse | null
 ): ResolvedModelComparison {
   const hasClaude = (res?.claudeModels.length ?? 0) > 0;
-  const timestamps = res
-    ? [res.updatedAt.claudeModels, res.updatedAt.benchmarks, res.updatedAt.trendingModels].filter(
-        (t): t is string => t !== null
-      )
-    : [];
-  const lastUpdatedAt =
-    timestamps.length > 0
-      ? timestamps.reduce((a, b) => (new Date(a).getTime() >= new Date(b).getTime() ? a : b))
-      : null;
 
   return {
     claudeModels: hasClaude ? res!.claudeModels : SEED_CLAUDE_MODELS,
@@ -127,21 +126,22 @@ export function resolveModelComparison(
     isClaudeSeed: !hasClaude,
     benchmarks: res?.benchmarks ?? [],
     trendingModels: res?.trendingModels ?? [],
-    lastUpdatedAt,
+    claudeUpdatedAt: res?.updatedAt.claudeModels ?? null,
+    aiModelsUpdatedAt: latest(res?.updatedAt.benchmarks, res?.updatedAt.trendingModels),
   };
 }
 
-export const MODEL_TABS = [
-  { id: "claude", label: "Claude モデル" },
-  { id: "benchmarks", label: "ベンチマーク比較" },
+/** 話題の AI 比較ページ（/ai-models）のタブ */
+export const AI_MODEL_TABS = [
   { id: "trending", label: "話題の AI モデル" },
+  { id: "benchmarks", label: "ベンチマーク比較" },
 ] as const;
 
-export type ModelTabId = (typeof MODEL_TABS)[number]["id"];
+export type ModelTabId = (typeof AI_MODEL_TABS)[number]["id"];
 
-export const DEFAULT_TAB: ModelTabId = "claude";
+export const DEFAULT_TAB: ModelTabId = "trending";
 
-const TAB_IDS = new Set<string>(MODEL_TABS.map((t) => t.id));
+const TAB_IDS = new Set<string>(AI_MODEL_TABS.map((t) => t.id));
 
 /** URL の tab パラメータを解釈する（不正値は既定タブ） */
 export function parseTab(value: string | string[] | undefined): ModelTabId {

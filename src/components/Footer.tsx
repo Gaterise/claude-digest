@@ -25,7 +25,12 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/models" className="text-xs text-gray-500 hover:text-gray-700">
-                  AI モデル比較
+                  Claude モデル比較
+                </Link>
+              </li>
+              <li>
+                <Link href="/ai-models" className="text-xs text-gray-500 hover:text-gray-700">
+                  話題の AI 比較
                 </Link>
               </li>
               <li>
