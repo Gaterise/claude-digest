@@ -2,14 +2,18 @@ import { describe, it, expect } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { Footer } from "@/components/Footer";
 
-describe("Footer コンポーネント（奥付）", () => {
-  it("奥付として誌名・内容・出典・更新・備考を記載する", () => {
+describe("Footer コンポーネント", () => {
+  it("「このサイトについて」欄に説明と情報元・更新・注意を分かりやすく記載する", () => {
     render(<Footer />);
-    const colophon = screen.getByRole("region", { name: "奥付" });
-    for (const term of ["誌名", "内容", "出典", "更新", "備考"]) {
-      expect(within(colophon).getByText(term)).toBeInTheDocument();
-    }
-    expect(within(colophon).getByText(/Anthropic の非公式サービス/)).toBeInTheDocument();
+    const about = screen.getByRole("region", { name: "このサイトについて" });
+    expect(within(about).getByText(/日本語で要約/)).toBeInTheDocument();
+    expect(within(about).getByText("情報元")).toBeInTheDocument();
+    expect(within(about).getByText("Claude Code 公式リリース（GitHub）")).toBeInTheDocument();
+    expect(within(about).getByText("更新")).toBeInTheDocument();
+    expect(within(about).getByText("1時間ごとに自動チェック")).toBeInTheDocument();
+    expect(within(about).getByText("注意")).toBeInTheDocument();
+    expect(within(about).getByText("Anthropic の非公式サイトです")).toBeInTheDocument();
+    expect(screen.queryByText("奥付")).not.toBeInTheDocument();
   });
 
   it("サイト内のページへのリンクを並べる", () => {

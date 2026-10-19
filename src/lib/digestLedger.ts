@@ -70,3 +70,13 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export function isNewArticle(iso: string, now: number = Date.now()): boolean {
   return now - new Date(iso).getTime() < DAY_MS;
 }
+
+/** 最終チェック時刻の短い表記（日本時間）。今日なら「今日 HH:MM」、別の日なら日付、別の年なら年も付ける */
+export function formatLastChecked(iso: string, now: Date = new Date()): string {
+  const target = getJstDateParts(iso);
+  const today = getJstDateParts(now.toISOString());
+  const time = formatJstTime(iso);
+  if (target.key === today.key) return `今日 ${time}`;
+  if (target.year === today.year) return `${target.month}月${target.day}日 ${time}`;
+  return `${target.year}年${target.month}月${target.day}日 ${time}`;
+}

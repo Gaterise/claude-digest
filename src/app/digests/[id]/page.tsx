@@ -49,7 +49,7 @@ export default async function DigestDetailPage({ params }: PageProps) {
             className="group inline-flex items-baseline gap-2 font-mincho text-sm text-ink-soft transition-colors hover:text-shu"
           >
             <span aria-hidden="true" className="transition-transform group-hover:-translate-x-0.5">←</span>
-            <span className="ledger-underline">変更ログ台帳へ戻る</span>
+            <span className="ledger-underline">一覧へ戻る</span>
           </Link>
         </nav>
         <DigestDetail article={article} />

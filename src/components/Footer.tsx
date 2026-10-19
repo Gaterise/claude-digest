@@ -1,11 +1,9 @@
 import Link from "next/link";
 
-const COLOPHON: { term: string; detail: string }[] = [
-  { term: "誌名", detail: "Claude Digest" },
-  { term: "内容", detail: "Claude Code の公式リリースを日本語で要約" },
-  { term: "出典", detail: "GitHub anthropics/claude-code Releases" },
-  { term: "更新", detail: "公式リリースを毎時チェック" },
-  { term: "備考", detail: "Anthropic の非公式サービスです" },
+const SITE_FACTS: { term: string; detail: string }[] = [
+  { term: "情報元", detail: "Claude Code 公式リリース（GitHub）" },
+  { term: "更新", detail: "1時間ごとに自動チェック" },
+  { term: "注意", detail: "Anthropic の非公式サイトです" },
 ];
 
 const GUIDE_LINKS = [
@@ -41,23 +39,24 @@ export function Footer() {
     <footer className="mt-8 border-t-[3px] border-double border-ink bg-paper-deep/60 text-ink sm:mt-16">
       <div className="mx-auto max-w-6xl px-4 pb-8 pt-10 sm:px-6 sm:pt-12">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16">
-          {/* 奥付 */}
-          <section aria-labelledby="footer-colophon">
-            <div className="flex items-end justify-between gap-4 border-b-2 border-ink pb-2">
-              <p className="font-mincho text-2xl font-extrabold tracking-[0.06em] sm:text-[1.7rem]">
-                Claude <span className="text-shu">Digest</span>
-              </p>
-              <h2
-                id="footer-colophon"
-                className="font-mincho text-sm font-bold tracking-[0.5em] text-ink-soft"
-              >
-                奥付
-              </h2>
-            </div>
-            <dl className="divide-y divide-rule/80">
-              {COLOPHON.map(({ term, detail }) => (
+          {/* サイト概要 */}
+          <section aria-labelledby="footer-about">
+            <p className="font-mincho text-2xl font-extrabold tracking-[0.06em] sm:text-[1.7rem]">
+              Claude <span className="text-shu">Digest</span>
+            </p>
+            <h2
+              id="footer-about"
+              className="mt-4 border-b-2 border-ink pb-1.5 font-mincho text-[13px] font-bold tracking-[0.08em] text-ink"
+            >
+              このサイトについて
+            </h2>
+            <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">
+              Claude Code の公式リリース内容を、AI が日本語で要約してお届けするサイトです。
+            </p>
+            <dl className="mt-3 divide-y divide-rule/80 border-t border-rule/80">
+              {SITE_FACTS.map(({ term, detail }) => (
                 <div key={term} className="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-3 py-2 text-[13px]">
-                  <dt className="font-mincho font-bold tracking-[0.3em] text-ink">{term}</dt>
+                  <dt className="font-mincho font-bold text-ink">{term}</dt>
                   <dd className="text-ink-soft">{detail}</dd>
                 </div>
               ))}

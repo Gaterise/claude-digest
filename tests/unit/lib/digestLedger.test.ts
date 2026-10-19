@@ -4,6 +4,7 @@ import {
   groupByJstDate,
   formatJstTime,
   isNewArticle,
+  formatLastChecked,
 } from "@/lib/digestLedger";
 
 const a = (id: string, publishedAt: string) => ({ id, publishedAt });
@@ -56,5 +57,26 @@ describe("isNewArticle", () => {
   });
   it("24時間以上前なら false", () => {
     expect(isNewArticle("2026-04-10T00:00:00.000Z", now)).toBe(false);
+  });
+});
+
+describe("formatLastChecked", () => {
+  const now = new Date("2026-10-19T09:40:00.000Z"); // JST 18:40
+
+  it("日本時間で同じ日なら「今日 HH:MM」", () => {
+    expect(formatLastChecked("2026-10-19T09:35:00.000Z", now)).toBe("今日 18:35");
+  });
+
+  it("日本時間の日付をまたいだ直後でも JST 基準で判定する", () => {
+    // UTC では 10/18 だが JST では 10/19 00:05
+    expect(formatLastChecked("2026-10-18T15:05:00.000Z", now)).toBe("今日 00:05");
+  });
+
+  it("別の日なら「M月D日 HH:MM」", () => {
+    expect(formatLastChecked("2026-10-18T09:35:00.000Z", now)).toBe("10月18日 18:35");
+  });
+
+  it("別の年なら年も付ける", () => {
+    expect(formatLastChecked("2025-12-31T14:59:00.000Z", now)).toBe("2025年12月31日 23:59");
   });
 });
