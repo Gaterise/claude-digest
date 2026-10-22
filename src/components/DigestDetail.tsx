@@ -34,15 +34,15 @@ export function DigestDetail({ article }: DigestDetailProps) {
           <span className="normal-case tracking-[0.15em]">Release Note</span>
         </div>
 
-        <div className="grid gap-x-8 gap-y-5 py-7 sm:grid-cols-[9.5rem_minmax(0,1fr)] sm:py-9">
+        <div className="grid gap-x-8 gap-y-5 py-7 sm:grid-cols-[11.5rem_minmax(0,1fr)] sm:py-9">
           {/* 版数と掲載日時 */}
-          <div className="flex items-end justify-between gap-4 border-b border-rule pb-4 sm:block sm:border-b-0 sm:border-r sm:pb-0 sm:pr-6">
+          <div data-testid="detail-meta" className="flex items-end justify-between gap-4 border-b border-rule pb-4 sm:block sm:border-b-0 sm:border-r sm:pb-0 sm:pr-6">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink-faint">Version</p>
               {article.originalVersion ? (
-                <p className="mt-1 font-numeral leading-none">
+                <p data-testid="detail-version" className="mt-1 whitespace-nowrap font-numeral leading-none">
                   <span className="mr-0.5 align-top text-sm italic text-ink-faint">v</span>
-                  <span className="text-[2.6rem] font-semibold tracking-tight tabular-nums sm:text-5xl">
+                  <span className="text-[2.4rem] font-semibold tracking-tight tabular-nums sm:text-4xl">
                     {article.originalVersion}
                   </span>
                 </p>
@@ -69,7 +69,7 @@ export function DigestDetail({ article }: DigestDetailProps) {
 
           <div className="min-w-0">
             <LedgerCategoryMarks categories={article.categories} size="md" className="mb-3" />
-            <h1 className="font-mincho text-[1.7rem] font-extrabold leading-[1.45] tracking-[0.02em] text-ink sm:text-[2.2rem]">
+            <h1 className="font-mincho text-[1.5rem] font-extrabold leading-[1.5] tracking-[0.02em] text-ink sm:text-[1.85rem]">
               {article.title}
             </h1>
           </div>
