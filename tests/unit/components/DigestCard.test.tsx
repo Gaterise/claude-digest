@@ -70,4 +70,16 @@ describe("DigestCard コンポーネント", () => {
     expect(meta.compareDocumentPosition(categories) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(meta.contains(categories)).toBe(false);
   });
+
+  it("公開から24時間以内の記事に、朱塗りの「新着」印を目立つ大きさで表示する", () => {
+    const fresh = { ...mockArticle, publishedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString() };
+    render(<DigestCard article={fresh} />);
+    const stamp = screen.getByText("新着");
+    expect(stamp).toHaveClass("bg-shu", "text-paper", "h-14", "w-14");
+  });
+
+  it("24時間より前の記事には「新着」印を表示しない", () => {
+    render(<DigestCard article={mockArticle} />);
+    expect(screen.queryByText("新着")).not.toBeInTheDocument();
+  });
 });

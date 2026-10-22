@@ -16,7 +16,7 @@ export function DigestCard({ article }: DigestCardProps) {
       data-testid="digest-card"
       className="group relative border-b border-rule/80 py-5 transition-colors last:border-b-0 hover:bg-paper-deep/40 sm:px-3"
     >
-      <div className="min-w-0 pr-12 sm:pr-16">
+      <div className="min-w-0 pr-16 sm:pr-20">
         {/* 1行目: 版数と時刻 */}
         <p data-testid="digest-meta" className="flex items-baseline gap-2.5 whitespace-nowrap leading-none">
           {article.originalVersion ? (
@@ -70,7 +70,7 @@ export function DigestCard({ article }: DigestCardProps) {
       {/* 新着印 */}
       {isNew && (
         <span
-          className="pointer-events-none absolute right-1 top-4 flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-shu font-mincho text-[11px] font-extrabold leading-none text-shu motion-safe:animate-stamp sm:right-3"
+          className="pointer-events-none absolute right-0 top-3 flex h-14 w-14 items-center justify-center rounded-full bg-shu font-mincho text-sm font-extrabold leading-none tracking-wider text-paper shadow-[0_2px_6px_rgb(194_58_34/0.35)] outline outline-1 -outline-offset-4 outline-paper/70 motion-safe:animate-stamp sm:right-2"
           style={{ transform: "rotate(-8deg)" }}
         >
           新着
