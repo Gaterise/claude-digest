@@ -7,6 +7,7 @@ vi.mock("@/lib/messaging", () => ({
   shouldShowNotificationPrompt: vi.fn(),
   enablePushNotifications: vi.fn(),
   dismissNotificationPrompt: vi.fn(),
+  listenForegroundMessages: vi.fn().mockResolvedValue(() => {}),
 }));
 
 const shouldShow = vi.mocked(messaging.shouldShowNotificationPrompt);
@@ -22,10 +23,10 @@ describe("NotificationPrompt コンポーネント", () => {
     shouldShow.mockResolvedValue(true);
     render(<NotificationPrompt />);
     expect(
-      await screen.findByText("更新があったら通知を受け取りませんか？")
+      await screen.findByText("更新通知を受け取りませんか？")
     ).toBeInTheDocument();
     expect(screen.getByText("通知を受け取る")).toBeInTheDocument();
-    expect(screen.getByText("あとで")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "閉じる" })).toBeInTheDocument();
   });
 
   it("表示条件を満たさない場合は何も表示しない", async () => {
@@ -45,9 +46,7 @@ describe("NotificationPrompt コンポーネント", () => {
     fireEvent.click(await screen.findByText("通知を受け取る"));
 
     expect(
-      await screen.findByText(
-        "プッシュ通知を有効にしました。変更ログが更新されたらお知らせします。"
-      )
+await screen.findByText("通知を有効にしました")
     ).toBeInTheDocument();
     expect(enablePush).toHaveBeenCalledOnce();
   });
@@ -72,19 +71,17 @@ describe("NotificationPrompt コンポーネント", () => {
     fireEvent.click(await screen.findByText("通知を受け取る"));
 
     expect(
-      await screen.findByText(
-        "通知の設定に失敗しました。時間をおいて再度お試しください。"
-      )
+await screen.findByText("設定に失敗しました。再度お試しください。")
     ).toBeInTheDocument();
     // バナー自体は残り、再試行できる
     expect(screen.getByText("通知を受け取る")).toBeInTheDocument();
   });
 
-  it("「あとで」クリックで非表示記録を保存してバナーを閉じる", async () => {
+  it("閉じるボタンのクリックで非表示記録を保存してバナーを閉じる", async () => {
     shouldShow.mockResolvedValue(true);
     const { container } = render(<NotificationPrompt />);
 
-    fireEvent.click(await screen.findByText("あとで"));
+    fireEvent.click(await screen.findByRole("button", { name: "閉じる" }));
 
     expect(dismissPrompt).toHaveBeenCalledOnce();
     expect(container).toBeEmptyDOMElement();

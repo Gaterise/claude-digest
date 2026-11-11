@@ -1,4 +1,4 @@
-import { getMessaging, getToken, isSupported } from "firebase/messaging";
+import { getMessaging, getToken, isSupported, onMessage } from "firebase/messaging";
 import { app } from "./firebase";
 
 const API_BASE_URL =
@@ -58,9 +58,63 @@ async function registerMessagingServiceWorker(): Promise<ServiceWorkerRegistrati
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? "",
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? "",
   });
-  return navigator.serviceWorker.register(
+  const registration = await navigator.serviceWorker.register(
     `/firebase-messaging-sw.js?${params.toString()}`
   );
+  return waitForActivation(registration);
+}
+
+/**
+ * Service Worker が有効化されるまで待つ。
+ * register() は有効化前に解決するため、そのまま getToken() を呼ぶと
+ * PushManager.subscribe が「no active Service Worker」で失敗する。
+ */
+function waitForActivation(
+  registration: ServiceWorkerRegistration
+): Promise<ServiceWorkerRegistration> {
+  if (registration.active) return Promise.resolve(registration);
+
+  const worker = registration.installing ?? registration.waiting;
+  if (!worker) {
+    return Promise.reject(new Error("Service Worker の登録状態が不正です"));
+  }
+
+  return new Promise((resolve, reject) => {
+    const check = () => {
+      if (worker.state === "activated") {
+        worker.removeEventListener("statechange", check);
+        resolve(registration);
+      } else if (worker.state === "redundant") {
+        worker.removeEventListener("statechange", check);
+        reject(new Error("Service Worker の有効化に失敗しました"));
+      }
+    };
+    worker.addEventListener("statechange", check);
+    check();
+  });
+}
+
+/**
+ * サイト表示中（フォアグラウンド）に届いたプッシュ通知を表示する。
+ * FCM はページがアクティブな間は通知を自動表示せず onMessage に渡すため。
+ * 通知設定済みでない場合は何もしない。戻り値は購読解除関数。
+ */
+export async function listenForegroundMessages(): Promise<() => void> {
+  const noop = () => {};
+  if (!(await isPushSupported())) return noop;
+  if (Notification.permission !== "granted") return noop;
+  if (localStorage.getItem(PUSH_ENABLED_KEY) !== "1") return noop;
+
+  const registration = await registerMessagingServiceWorker();
+  return onMessage(getMessaging(app), (payload) => {
+    const { title, body, icon } = payload.notification ?? {};
+    // クリック時の遷移は Service Worker の notificationclick で data.link を開く
+    void registration.showNotification(title ?? "Claude Digest", {
+      body,
+      icon: icon ?? "/icon-192x192.png",
+      data: { link: payload.fcmOptions?.link ?? "/" },
+    });
+  });
 }
 
 /**

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   dismissNotificationPrompt,
   enablePushNotifications,
+  listenForegroundMessages,
   shouldShowNotificationPrompt,
 } from "@/lib/messaging";
 
@@ -15,6 +16,23 @@ type PromptState = "hidden" | "visible" | "enabling" | "enabled" | "error";
  */
 export function NotificationPrompt() {
   const [state, setState] = useState<PromptState>("hidden");
+  // 有効化直後にもフォアグラウンド受信を開始するための再実行トリガー
+  const [listenKey, setListenKey] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+    listenForegroundMessages()
+      .then((unsub) => {
+        if (cancelled) unsub();
+        else unsubscribe = unsub;
+      })
+      .catch((err) => console.error("フォアグラウンド通知の受信開始エラー:", err));
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
+  }, [listenKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,6 +58,7 @@ export function NotificationPrompt() {
     const result = await enablePushNotifications();
     if (result === "enabled") {
       setState("enabled");
+      setListenKey((k) => k + 1);
     } else if (result === "permission-denied") {
       // ブラウザ側で拒否された場合は再案内しても無意味なので閉じる
       setState("hidden");

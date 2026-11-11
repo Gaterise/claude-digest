@@ -17,3 +17,12 @@ firebase.initializeApp(
 // notification ペイロード付きメッセージは SDK が自動で通知を表示し、
 // クリック時は webpush.fcmOptions.link の URL を開く
 firebase.messaging();
+
+// サイト表示中にページ側（listenForegroundMessages）で表示した通知のクリック処理。
+// SDK 表示分は data に FCM_MSG を持ち link を持たないため、ここでは無視される
+self.addEventListener("notificationclick", (event) => {
+  const link = event.notification.data && event.notification.data.link;
+  if (!link) return;
+  event.notification.close();
+  event.waitUntil(self.clients.openWindow(link));
+});
